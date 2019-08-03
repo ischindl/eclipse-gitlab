@@ -1,5 +1,8 @@
 image: openjdk:8-jdk
 
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
@@ -10,7 +13,7 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
 stages:
-  - unit test
+  - test
   - ui test
 
 before_script:
@@ -22,7 +25,7 @@ cache:
     - $CI_PROJECT_DIR/.m2/repository
 
 Unit Test:
-  stage: unit test
+  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS clean compile
     - mvn $MAVEN_CLI_OPTS verify -PUnitTest
