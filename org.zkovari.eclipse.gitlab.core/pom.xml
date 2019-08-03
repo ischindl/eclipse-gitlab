@@ -13,21 +13,20 @@
   License for the specific language governing permissions and limitations under
   the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.zkovari.eclipse.gitlab.bundles</artifactId>
-	<packaging>pom</packaging>
 
 	<parent>
 		<groupId>org.zkovari.eclipse</groupId>
 		<artifactId>org.zkovari.eclipse.gitlab.parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<modules>
-		<module>org.zkovari.eclipse.gitlab.core</module>
-		<module>org.zkovari.eclipse.gitlab.ui</module>
-		<module>org.zkovari.eclipse.gitlab.ui.test</module>
-	</modules>
+	<artifactId>org.zkovari.eclipse.gitlab.core</artifactId>
+	<packaging>eclipse-plugin</packaging>
+
 </project>

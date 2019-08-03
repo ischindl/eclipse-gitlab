@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.zkovari.eclipse</groupId>
-		<artifactId>org.zkovari.eclipse.gitlab.bundles</artifactId>
+		<artifactId>org.zkovari.eclipse.gitlab.parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>

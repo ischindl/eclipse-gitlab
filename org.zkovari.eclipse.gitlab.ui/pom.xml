@@ -21,12 +21,12 @@
 
 	<parent>
 		<groupId>org.zkovari.eclipse</groupId>
-		<artifactId>org.zkovari.eclipse.gitlab.bundles</artifactId>
+		<artifactId>org.zkovari.eclipse.gitlab.parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>org.zkovari.eclipse.gitlab.core</artifactId>
+	<artifactId>org.zkovari.eclipse.gitlab.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
 
 </project>
