@@ -24,11 +24,51 @@ cache:
   paths:
     - $CI_PROJECT_DIR/.m2/repository
 
-Unit Test:
+.unit test base:
   stage: test
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/latest
   script:
-    - mvn $MAVEN_CLI_OPTS clean compile
-    - mvn $MAVEN_CLI_OPTS verify -PUnitTest
+    - mvn $MAVEN_CLI_OPTS clean compile -Declipse-repo.url=$REPO_URL
+    - mvn $MAVEN_CLI_OPTS verify -PUnitTest -Declipse-repo.url=$REPO_URL
+
+Unit Test latest:
+  extends: .unit test base
+
+Unit Test 2019-03:
+  extends: .unit test base
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2019-03
+
+Unit Test 2018-12:
+  extends: .unit test base
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2018-12
+
+Unit Test 2018-09:
+  extends: .unit test base
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2018-09
+
+Unit Test Photon:
+  extends: .unit test base
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/photon
+
+Unit Test Oxygen:
+  extends: .unit test base
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/oxygen
+
+Unit Test Neon:
+  extends: .unit test base
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/neon
+
+Unit Test Mars:
+  extends: .unit test base
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/mars
 
 UI Test:
   stage: ui test
