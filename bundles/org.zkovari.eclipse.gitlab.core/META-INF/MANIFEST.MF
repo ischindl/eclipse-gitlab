@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.zkovari.eclipse.gitlab.core
+Bundle-SymbolicName: org.zkovari.eclipse.gitlab.core
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: org.zkovari.eclipse.gitlab.core.Activator
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.zkovari.eclipse.gitlab.core
+Bundle-ActivationPolicy: lazy
+Export-Package: org.zkovari.eclipse.gitlab.core
