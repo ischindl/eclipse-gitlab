@@ -16,9 +16,12 @@
 package org.eclipse.zkovari.gitlab.ui.test;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.swt.finder.finders.UIThreadRunnable;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
+import org.eclipse.swtbot.swt.finder.results.VoidResult;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+import org.eclipse.ui.PlatformUI;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,12 +33,17 @@ public class GitLabPerspectiveTest {
 	private SWTWorkbenchBot bot;
 
 	@Before
-	public void beforeClass() throws Exception {
+	public void setUp() throws Exception {
 		bot = new SWTWorkbenchBot();
+		UIThreadRunnable.syncExec(new VoidResult() {
+			public void run() {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().forceActive();
+			}
+		});
 	}
 
 	@Test
-	public void canCreateANewJavaProject() throws Exception {
+	public void testPreferencesPageIsVisible() throws Exception {
 		bot.menu("Window").menu("Preferences").click();
 		SWTBotShell prefsShell = bot.shell("Preferences");
 		prefsShell.activate();
