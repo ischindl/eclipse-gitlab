@@ -10,6 +10,9 @@ stages:
   - unit test
   - ui test
 
+before_script:
+  - apt-get update -qq && apt-get install -y -qq maven
+
 cache:
   key: "$CI_JOB_NAME"
   paths:
@@ -17,11 +20,10 @@ cache:
 
 .prepare ui test:
   script:
-    - apt-get update -qq && apt-get install -y -qq maven xvfb iceweasel
+    - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
     - apt-get install  -yqq
     - Xvfb :99 -ac &
     - export DISPLAY=:99
-    - env
 
 Compile:
   stage: build
