@@ -1,2 +1,3 @@
-# eclipse-gitlab
-Eclipse GitLab integration plugin
+# Eclipse GitLab integration plugin
+
+Under development.
