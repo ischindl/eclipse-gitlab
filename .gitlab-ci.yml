@@ -10,7 +10,6 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
 stages:
-  - build
   - unit test
   - ui test
 
@@ -29,15 +28,11 @@ cache:
     - Xvfb :99 -ac &
     - export DISPLAY=:99
 
-Compile:
-  stage: build
-  script:
-    - mvn $MAVEN_CLI_OPTS clean compile
-
 Unit Test:
   stage: unit test
   script:
-    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest
+    - mvn $MAVEN_CLI_OPTS clean compile
+    - mvn $MAVEN_CLI_OPTS verify -PUnitTest
 
 UI Test:
   extends: .prepare ui test
