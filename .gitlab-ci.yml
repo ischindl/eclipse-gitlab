@@ -21,13 +21,6 @@ cache:
   paths:
     - $CI_PROJECT_DIR/.m2/repository
 
-.prepare ui test:
-  script:
-    - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
-    - apt-get install  -yqq
-    - Xvfb :99 -ac &
-    - export DISPLAY=:99
-
 Unit Test:
   stage: unit test
   script:
@@ -35,8 +28,10 @@ Unit Test:
     - mvn $MAVEN_CLI_OPTS verify -PUnitTest
 
 UI Test:
-  extends: .prepare ui test
   stage: ui test
   when: manual
   script:
+    - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
+    - Xvfb :99 -ac &
+    - export DISPLAY=:99
     - mvn $MAVEN_CLI_OPTS clean verify -PUITest
