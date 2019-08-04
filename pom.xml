@@ -58,7 +58,6 @@
 				<module>org.zkovari.eclipse.gitlab.core.test</module>
 				<module>org.zkovari.eclipse.gitlab.ui</module>
 				<module>org.zkovari.eclipse.gitlab.ui.test</module>
-				<module>org.zkovari.eclipse.gitlab.coverage.report</module>
 			</modules>
 		</profile>
 
@@ -72,7 +71,6 @@
 				<module>org.zkovari.eclipse.gitlab.core</module>
 				<module>org.zkovari.eclipse.gitlab.core.test</module>
 				<module>org.zkovari.eclipse.gitlab.ui</module>
-				<module>org.zkovari.eclipse.gitlab.coverage.report</module>
 			</modules>
 		</profile>
 
@@ -84,18 +82,22 @@
 
 			<modules>
 				<module>org.zkovari.eclipse.gitlab.core</module>
+				<module>org.zkovari.eclipse.gitlab.ui</module>
+				<module>org.zkovari.eclipse.gitlab.ui.test</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>Coverage</id>
+			
+			<modules>
+				<module>org.zkovari.eclipse.gitlab.core</module>
 				<module>org.zkovari.eclipse.gitlab.core.test</module>
 				<module>org.zkovari.eclipse.gitlab.ui</module>
 				<module>org.zkovari.eclipse.gitlab.ui.test</module>
 				<module>org.zkovari.eclipse.gitlab.coverage.report</module>
 			</modules>
-		</profile>
-
-		<profile>
-			<id>Jacoco</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
+			
 			<build>
 				<plugins>
 					<plugin>
