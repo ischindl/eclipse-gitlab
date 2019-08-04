@@ -20,6 +20,10 @@ package org.zkovari.eclipse.gitlab.ui.preferences;
  */
 public class PreferenceConstants {
 
+	private PreferenceConstants() {
+		throw new IllegalStateException("Static class");
+	}
+
 	public static final String P_GITLAB_SERVER = "org.zkovari.eclipse.gitlab.gitlab_server_preference";
 
 }

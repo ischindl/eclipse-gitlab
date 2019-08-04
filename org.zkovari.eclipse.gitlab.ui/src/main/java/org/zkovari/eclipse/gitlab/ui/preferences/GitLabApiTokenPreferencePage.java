@@ -32,7 +32,7 @@ public class GitLabApiTokenPreferencePage extends PreferencePage implements IWor
 
 	public GitLabApiTokenPreferencePage() {
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("Store GitLab API Token is secure storage:");
+		setDescription("Store GitLab API Token in secure storage:");
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class GitLabApiTokenPreferencePage extends PreferencePage implements IWor
 		composite.setLayout(layout);
 
 		Button button = new Button(composite, SWT.PUSH);
-		button.setText("Press me");
+		button.setText("Specify API token");
 
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -58,7 +58,6 @@ public class GitLabApiTokenPreferencePage extends PreferencePage implements IWor
 	@Override
 	public void init(IWorkbench workbench) {
 		// empty
-
 	}
 
 }

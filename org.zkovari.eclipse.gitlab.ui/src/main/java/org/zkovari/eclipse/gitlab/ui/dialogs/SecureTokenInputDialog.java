@@ -17,7 +17,6 @@ package org.zkovari.eclipse.gitlab.ui.dialogs;
 
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
-import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -30,6 +29,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.zkovari.eclipse.gitlab.core.security.GitLabSecureStore;
+import org.zkovari.eclipse.gitlab.core.security.SecureStoreException;
 
 public class SecureTokenInputDialog extends TitleAreaDialog {
 
@@ -59,15 +60,17 @@ public class SecureTokenInputDialog extends TitleAreaDialog {
 		Button button = new Button(container, SWT.PUSH);
 		button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		button.setText("Store in secure storage");
+
+		Text message = new Text(container, SWT.READ_ONLY);
+
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ISecurePreferences preferences = SecurePreferencesFactory.getDefault();
-				ISecurePreferences node = preferences.node("gitlab");
 				try {
-					node.put("token", passwordField.getText(), true);
-				} catch (StorageException e1) {
-					e1.printStackTrace();
+					new GitLabSecureStore().storeToken(preferences, passwordField.getText());
+				} catch (SecureStoreException ex) {
+					message.setText(ex.getMessage());
 				}
 			}
 		});
