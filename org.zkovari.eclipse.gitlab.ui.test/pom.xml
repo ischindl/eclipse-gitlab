@@ -39,6 +39,7 @@
 					<product>org.eclipse.sdk.ide</product>
 					<application>org.eclipse.ui.ide.workbench</application>
 					<trimStackTrace>false</trimStackTrace>
+					<argLine>${tycho.testArgLine}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
