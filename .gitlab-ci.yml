@@ -25,14 +25,13 @@ cache:
   variables:
     REPO_URL: http://download.eclipse.org/releases/latest
   script:
-    - mvn $MAVEN_CLI_OPTS clean compile -Declipse-repo.url=$REPO_URL
     - mvn $MAVEN_CLI_OPTS verify -PUnitTest -Declipse-repo.url=$REPO_URL
 
 Unit Test latest JDK 11:
-  variables:
-    MAVEN_CLI_OPTS: "$MAVEN_CLI_OPTS -Dmaven.compiler.source=1.11 -Dmaven.compiler.target=1.11"
-  image: openjdk:11-jdk
   extends: .unit test base
+  image: openjdk:11-jdk
+  script:
+    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest -Declipse-repo.url=$REPO_URL -Dmaven.compiler.source=1.11 -Dmaven.compiler.target=1.11
 
 Unit Test latest:
   extends: .unit test base
