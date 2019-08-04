@@ -106,11 +106,13 @@ UI Test Oxygen:
 
 UI Test Neon:
   extends: .ui test base
+  allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/neon
 
 UI Test Mars:
   extends: .ui test base
+  allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/mars
 
