@@ -31,7 +31,7 @@ Unit Test latest JDK 11:
   extends: .unit test base
   image: openjdk:11-jdk
   script:
-    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest -Declipse-repo.url=$REPO_URL -Dmaven.compiler.source=1.11 -Dmaven.compiler.target=1.11
+    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest -Declipse-repo.url=$REPO_URL -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
 
 Unit Test latest:
   extends: .unit test base
