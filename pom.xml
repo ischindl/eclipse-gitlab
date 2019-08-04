@@ -1,10 +1,18 @@
-<!-- Copyright 2019 Zsolt Kovari Licensed under the Apache License, Version 
-	2.0 (the "License"); you may not use this file except in compliance with 
-	the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
-	Unless required by applicable law or agreed to in writing, software distributed 
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
-	the specific language governing permissions and limitations under the License. -->
+<!--
+  Copyright 2019 Zsolt Kovari
+  
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License.  You may obtain a copy
+  of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -14,50 +22,10 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<profiles>
-
-		<profile>
-			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-
-			<modules>
-				<module>org.zkovari.eclipse.gitlab.core</module>
-				<module>org.zkovari.eclipse.gitlab.ui</module>
-				<module>org.zkovari.eclipse.gitlab.ui.test</module>
-			</modules>
-		</profile>
-
-		<profile>
-			<id>UnitTest</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-
-			<modules>
-				<module>org.zkovari.eclipse.gitlab.core</module>
-			</modules>
-		</profile>
-
-		<profile>
-			<id>UITest</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-
-			<modules>
-				<module>org.zkovari.eclipse.gitlab.core</module>
-				<module>org.zkovari.eclipse.gitlab.ui</module>
-				<module>org.zkovari.eclipse.gitlab.ui.test</module>
-			</modules>
-		</profile>
-
-	</profiles>
-
-
 	<properties>
+		<project.version>0.0.1-SNAPSHOT</project.version>
 		<tycho.version>1.4.0</tycho.version>
+		<jacoco-version>0.8.4</jacoco-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -70,13 +38,83 @@
 			<url>${eclipse-repo.url}</url>
 			<layout>p2</layout>
 		</repository>
-		
+
 		<repository>
 			<id>eclipse-swtbot</id>
 			<url>https://download.eclipse.org/technology/swtbot/releases/latest/</url>
 			<layout>p2</layout>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>Dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<modules>
+				<module>org.zkovari.eclipse.gitlab.core</module>
+				<module>org.zkovari.eclipse.gitlab.core.test</module>
+				<module>org.zkovari.eclipse.gitlab.ui</module>
+				<module>org.zkovari.eclipse.gitlab.ui.test</module>
+				<module>org.zkovari.eclipse.gitlab.coverage.report</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>UnitTest</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<modules>
+				<module>org.zkovari.eclipse.gitlab.core</module>
+				<module>org.zkovari.eclipse.gitlab.core.test</module>
+				<module>org.zkovari.eclipse.gitlab.ui</module>
+				<module>org.zkovari.eclipse.gitlab.coverage.report</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>UITest</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<modules>
+				<module>org.zkovari.eclipse.gitlab.core</module>
+				<module>org.zkovari.eclipse.gitlab.core.test</module>
+				<module>org.zkovari.eclipse.gitlab.ui</module>
+				<module>org.zkovari.eclipse.gitlab.ui.test</module>
+				<module>org.zkovari.eclipse.gitlab.coverage.report</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>Jacoco</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco-version}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
 
 	<build>
 		<plugins>
