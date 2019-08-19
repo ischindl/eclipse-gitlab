@@ -21,6 +21,41 @@
             class="org.zkovari.eclipse.gitlab.ui.preferences.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.zkovari.eclipse.gitlab.ui.pipeline"
+            name="GitLab">
+      </category>
+      <view
+            category="org.zkovari.eclipse.gitlab.ui.pipeline"
+            class="org.zkovari.eclipse.gitlab.ui.views.GitLabPipelineView"
+            icon="icons/gitlab_logo.png"
+            id="org.zkovari.eclipse.gitlab.ui.views.GitLabPipelineView"
+            inject="true"
+            name="GitLab Pipeline">
+      </view>
+   </extension>
+    <extension
+        point="org.eclipse.mylyn.commons.notifications.ui.notifications">
+     <category
+           icon="icons/obj16/repository.gif"
+           id="myNotificationCategory"
+           label="My Category">
+     </category>
+     <event
+           categoryId="myNotificationCategory"
+           icon="icons/obj16/some-image.gif"
+           id="myEvent"
+           label="Hello World">
+        <defaultHandler
+              sinkId="org.eclipse.mylyn.commons.notifications.sink.Popup">
+        </defaultHandler>
+        <description>
+          This is the description of the event.
+        </description>
+     </event>
+</extension>
 
 
 </plugin>
