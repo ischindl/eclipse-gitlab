@@ -119,8 +119,9 @@ public class GitLabPipelineView extends ViewPart {
         viewer.getTable().setHeaderVisible(true);
         viewer.getTable().setLinesVisible(true);
 
-        viewer.setContentProvider(new ObservableListContentProvider<Pipeline>());
-        IObservableList<Pipeline> input = Properties.<Pipeline>selfList(Pipeline.class).observe(pipelines);
+        // removed generic because it wasn't supported in previous Eclipse versions
+        viewer.setContentProvider(new ObservableListContentProvider());
+        IObservableList input = Properties.<Pipeline>selfList(Pipeline.class).observe(pipelines);
         viewer.setInput(input);
 
         workbench.getHelpSystem().setHelp(viewer.getControl(), "org.zkovari.eclipse.gitlab.ui.viewer");
