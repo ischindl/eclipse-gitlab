@@ -112,8 +112,10 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
     @Test
     public void testGetOrCreateGitLabProject() throws Exception {
         Git git = Git.init().setDirectory(repoPath.toFile()).call();
-        git.remoteSetUrl().setRemoteName("origin").setRemoteUri(new URIish("git@gitlab.com:namespace/project.git"))
-                .call();
+        RemoteSetUrlCommand remoteSetUrl = git.remoteSetUrl();
+        remoteSetUrl.setName("origin");
+        remoteSetUrl.setUri(new URIish("git@gitlab.com:namespace/project.git"));
+        remoteSetUrl.call();
 
         ISecurePreferences secureStore = setUpSecureStore(temp.getRoot());
         Activator.getInstance().getGitLabSecureStore().storeToken(secureStore, TEST_TOKEN);
