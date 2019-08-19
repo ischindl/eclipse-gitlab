@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.RemoteSetUrlCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.URIish;
 import org.junit.Rule;
@@ -132,8 +133,10 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
     @Test(timeout = 10000)
     public void testGetOrCreateGitLabProject_fromMultipleThreads() throws Exception {
         Git git = Git.init().setDirectory(repoPath.toFile()).call();
-        git.remoteSetUrl().setRemoteName("origin").setRemoteUri(new URIish("git@gitlab.com:namespace/project.git"))
-                .call();
+        RemoteSetUrlCommand remoteSetUrl = git.remoteSetUrl();
+        remoteSetUrl.setName("origin");
+        remoteSetUrl.setUri(new URIish("git@gitlab.com:namespace/project.git"));
+        remoteSetUrl.call();
 
         String projectResponse = loadResourceAsString("gitlab/responses/project-response.json");
         mockHttpGet(200, projectResponse);
