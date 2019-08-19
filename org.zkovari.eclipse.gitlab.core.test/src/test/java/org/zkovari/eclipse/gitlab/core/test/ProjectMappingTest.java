@@ -32,17 +32,13 @@ import java.util.concurrent.Future;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.RemoteSetUrlCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.URIish;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentMatchers;
-import org.zkovari.eclipse.gitlab.core.Activator;
 import org.zkovari.eclipse.gitlab.core.GitLabProject;
 import org.zkovari.eclipse.gitlab.core.ProjectMapping;
 import org.zkovari.eclipse.gitlab.core.internal.TestGitLabClient;
@@ -112,13 +108,8 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
     @Test
     public void testGetOrCreateGitLabProject() throws Exception {
         Git git = Git.init().setDirectory(repoPath.toFile()).call();
-        RemoteSetUrlCommand remoteSetUrl = git.remoteSetUrl();
-        remoteSetUrl.setName("origin");
-        remoteSetUrl.setUri(new URIish("git@gitlab.com:namespace/project.git"));
-        remoteSetUrl.call();
-
-        ISecurePreferences secureStore = setUpSecureStore(temp.getRoot());
-        Activator.getInstance().getGitLabSecureStore().storeToken(secureStore, TEST_TOKEN);
+        git.getRepository().getConfig().setString("remote", "origin", "url", "git@gitlab.com:namespace/project.git");
+        git.getRepository().getConfig().save();
 
         String projectResponse = loadResourceAsString("gitlab/responses/project-response.json");
         mockHttpGet(200, projectResponse);
@@ -135,10 +126,8 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
     @Test(timeout = 10000)
     public void testGetOrCreateGitLabProject_fromMultipleThreads() throws Exception {
         Git git = Git.init().setDirectory(repoPath.toFile()).call();
-        RemoteSetUrlCommand remoteSetUrl = git.remoteSetUrl();
-        remoteSetUrl.setName("origin");
-        remoteSetUrl.setUri(new URIish("git@gitlab.com:namespace/project.git"));
-        remoteSetUrl.call();
+        git.getRepository().getConfig().setString("remote", "origin", "url", "git@gitlab.com:namespace/project.git");
+        git.getRepository().getConfig().save();
 
         String projectResponse = loadResourceAsString("gitlab/responses/project-response.json");
         mockHttpGet(200, projectResponse);
