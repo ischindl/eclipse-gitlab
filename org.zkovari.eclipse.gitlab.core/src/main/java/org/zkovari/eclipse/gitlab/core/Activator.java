@@ -17,23 +17,62 @@ package org.zkovari.eclipse.gitlab.core;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.zkovari.eclipse.gitlab.core.internal.TestGitLabClient;
+import org.zkovari.eclipse.gitlab.core.security.GitLabSecureStore;
 
 public class Activator implements BundleActivator {
 
-	private static BundleContext context;
+    private static BundleContext context;
+    private static Activator plugin;
 
-	static BundleContext getContext() {
-		return context;
-	}
+    private GitLabClient gitLabClient;
+    private GitLabSecureStore gitLabSecureStore;
+    private ProjectMapping projectMapping;
 
-	@Override
-	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;
-	}
+    static BundleContext getContext() {
+        return context;
+    }
 
-	@Override
-	public void stop(BundleContext bundleContext) throws Exception {
-		Activator.context = null;
-	}
+    public Activator() {
+        plugin = this;
+    }
+
+    /**
+     * @return the singleton {@link Activator}
+     */
+    public static Activator getInstance() {
+        return plugin;
+    }
+
+    @Override
+    public void start(BundleContext bundleContext) throws Exception {
+        Activator.context = bundleContext;
+
+        if ("UNIT_TEST".equals(System.getenv("org.zkovari.eclipse.gitlabServerEnvironment"))) {
+            gitLabClient = new TestGitLabClient();
+        } else {
+            gitLabClient = new GitLabClient();
+        }
+
+        gitLabSecureStore = new GitLabSecureStore();
+        projectMapping = new ProjectMapping();
+    }
+
+    @Override
+    public void stop(BundleContext bundleContext) throws Exception {
+        Activator.context = null;
+    }
+
+    public GitLabClient getGitLabClient() {
+        return gitLabClient;
+    }
+
+    public GitLabSecureStore getGitLabSecureStore() {
+        return gitLabSecureStore;
+    }
+
+    public ProjectMapping getProjectMapping() {
+        return projectMapping;
+    }
 
 }

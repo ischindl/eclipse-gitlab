@@ -22,37 +22,37 @@ import org.eclipse.equinox.security.storage.StorageException;
 
 public class GitLabSecureStore {
 
-	private static final String GITLAB_SECURE_STORE_TOKEN_KEY = "token";
-	private static final String GITLAB_SECURE_STORE_PATH_NAME = "org.zkovari.eclipse.gitlab";
+    private static final String GITLAB_SECURE_STORE_TOKEN_KEY = "token";
+    private static final String GITLAB_SECURE_STORE_PATH_NAME = "org.zkovari.eclipse.gitlab";
 
-	public void storeToken(ISecurePreferences preferences, String token) throws SecureStoreException {
-		ISecurePreferences node = getNode(preferences);
-		try {
-			node.put(GITLAB_SECURE_STORE_TOKEN_KEY, token, true);
-		} catch (StorageException ex) {
-			throw new SecureStoreException(
-					"Encrypton failed while storing GitLab token in secure storage: " + ex.getMessage(), ex);
-		}
-	}
+    public void storeToken(ISecurePreferences preferences, String token) throws SecureStoreException {
+        ISecurePreferences node = getNode(preferences);
+        try {
+            node.put(GITLAB_SECURE_STORE_TOKEN_KEY, token, true);
+        } catch (StorageException ex) {
+            throw new SecureStoreException(
+                    "Encryption failed while storing GitLab token in secure storage: " + ex.getMessage(), ex);
+        }
+    }
 
-	public Optional<String> getToken(ISecurePreferences preferences) throws SecureStoreException {
-		ISecurePreferences node = getNode(preferences);
-		try {
-			String token = node.get(GITLAB_SECURE_STORE_TOKEN_KEY, null);
-			return Optional.ofNullable(token);
-		} catch (StorageException ex) {
-			throw new SecureStoreException(
-					"Decrypton failed while retrieving GitLab token from secure storage: " + ex.getMessage(), ex);
-		}
-	}
+    public Optional<String> getToken(ISecurePreferences preferences) throws SecureStoreException {
+        ISecurePreferences node = getNode(preferences);
+        try {
+            String token = node.get(GITLAB_SECURE_STORE_TOKEN_KEY, null);
+            return Optional.ofNullable(token);
+        } catch (StorageException ex) {
+            throw new SecureStoreException(
+                    "Decryption failed while retrieving GitLab token from secure storage: " + ex.getMessage(), ex);
+        }
+    }
 
-	private ISecurePreferences getNode(ISecurePreferences preferences) throws SecureStoreException {
-		try {
-			return preferences.node(GITLAB_SECURE_STORE_PATH_NAME);
-		} catch (IllegalStateException ex) {
-			throw new SecureStoreException("The following node was already removed from secure storage: "
-					+ GITLAB_SECURE_STORE_TOKEN_KEY + ". Reason: " + ex.getMessage(), ex);
-		}
-	}
+    private ISecurePreferences getNode(ISecurePreferences preferences) throws SecureStoreException {
+        try {
+            return preferences.node(GITLAB_SECURE_STORE_PATH_NAME);
+        } catch (IllegalStateException ex) {
+            throw new SecureStoreException("The following node was already removed from secure storage: "
+                    + GITLAB_SECURE_STORE_TOKEN_KEY + ". Reason: " + ex.getMessage(), ex);
+        }
+    }
 
 }
