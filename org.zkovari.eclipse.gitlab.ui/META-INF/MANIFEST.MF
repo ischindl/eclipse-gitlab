@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.ui,
  org.zkovari.eclipse.gitlab.core,
  org.eclipse.core.databinding,
  org.eclipse.core.databinding.property,
- org.eclipse.jface.databinding
+ org.eclipse.jface.databinding,
+ org.eclipse.e4.ui.di
 Bundle-ClassPath: .
 Export-Package: org.zkovari.eclipse.gitlab.ui,
  org.zkovari.eclipse.gitlab.ui.dialogs,

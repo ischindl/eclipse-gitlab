@@ -27,7 +27,10 @@ import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -72,16 +75,24 @@ public class GitLabPipelineView extends ViewPart {
     @Inject
     IWorkbench workbench;
 
+    @Inject
+    UISynchronize sync;
+
+    private Composite composite;
     private TableViewer viewer;
-    private Action action1;
-
-    private GitLabProject gitLabProject;
-
+    private Action refreshAction;
     private Link projectStatus;
 
-    private ProjectMapping projectMapping;
+    private GitLabProject gitLabProject;
+    private IPath repositoryPath;
 
-    private List<Pipeline> pipelines;
+    private final ProjectMapping projectMapping;
+    private final List<Pipeline> pipelines;
+
+    public GitLabPipelineView() {
+        pipelines = new ArrayList<>();
+        projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getInstance().getProjectMapping();
+    }
 
     class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
         @Override
@@ -102,19 +113,50 @@ public class GitLabPipelineView extends ViewPart {
 
     @Override
     public void createPartControl(Composite parent) {
-        projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getInstance().getProjectMapping();
-        pipelines = new ArrayList<>();
-        Composite composite = new Composite(parent, SWT.NONE);
+        composite = new Composite(parent, SWT.NONE);
         FillLayout fillLayout = new FillLayout(SWT.VERTICAL);
         composite.setLayout(fillLayout);
 
         projectStatus = new Link(composite, SWT.NONE);
         projectStatus.setText("Select project in Package Explorer");
+        addRepositoryBindingSelectionListener();
+        addProjectSelectionListener();
+        makeActions();
+        contributeToActionBars();
+    }
 
+    private void addRepositoryBindingSelectionListener() {
+        projectStatus.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Job job = Job.create("Update table", (ICoreRunnable) monitor -> {
+                    try {
+                        Optional<String> token = GitLabUtils.getToken();
+                        gitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get());
+                        fetchPipelines();
+                    } catch (IOException e1) {
+                        gitLabProject = null;
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                    sync.asyncExec(() -> {
+                        if (viewer == null || viewer.getTable().isDisposed()) {
+                            createTableViewer();
+                            projectStatus.dispose();
+                            composite.layout(true);
+                        }
+                    });
+                });
+
+                job.schedule();
+            }
+        });
+    }
+
+    private void createTableViewer() {
         viewer = new TableViewer(composite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.FILL);
         createColumns();
-
-        addSelectionListener();
 
         viewer.getTable().setHeaderVisible(true);
         viewer.getTable().setLinesVisible(true);
@@ -123,58 +165,57 @@ public class GitLabPipelineView extends ViewPart {
         viewer.setContentProvider(new ObservableListContentProvider());
         IObservableList input = Properties.<Pipeline>selfList(Pipeline.class).observe(pipelines);
         viewer.setInput(input);
-
-        workbench.getHelpSystem().setHelp(viewer.getControl(), "org.zkovari.eclipse.gitlab.ui.viewer");
-        makeActions();
-        contributeToActionBars();
     }
 
-    private void addSelectionListener() {
+    private void addProjectSelectionListener() {
         ISelectionService service = getSite().getService(ISelectionService.class);
         service.addSelectionListener("org.eclipse.jdt.ui.PackageExplorer", (part, selection) -> {
             IProject project = findSelectedProject(selection);
             if (project == null) {
                 return;
             }
-            IPath repositoryPath = projectMapping.findRepositoryPath(project);
+            repositoryPath = projectMapping.findRepositoryPath(project);
             if (repositoryPath == null) {
-                projectStatus.setText("Selected project is not a EGit repository: " + project.getName());
-                pipelines.clear();
-                viewer.refresh();
+                displayProjectStatusAndHideTable("Selected project is not an EGit repository: " + project.getName());
                 return;
             }
 
             gitLabProject = projectMapping.findProject(repositoryPath);
             if (gitLabProject == null) {
-                projectStatus.setText("<a>Bind project " + project.getName() + "</a>");
-                pipelines.clear();
-                viewer.refresh();
-                projectStatus.addSelectionListener(new SelectionAdapter() {
-
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        try {
-                            Optional<String> token = GitLabUtils.getToken();
-                            gitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get());
-                            fetchPipelines();
-                            projectStatus.setText("");
-                            viewer.refresh();
-                        } catch (IOException e1) {
-                            gitLabProject = null;
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
-                    }
-
-                });
+                displayProjectStatusAndHideTable("<a>Bind project " + project.getName() + "</a>");
                 return;
             }
-
-            projectStatus.setText("");
+            if (!projectStatus.isDisposed()) {
+                projectStatus.dispose();
+                composite.layout(true);
+            }
+            if (gitLabProject.getPipelines().isEmpty()) {
+                displayProjectStatusAndHideTable("Selected project does not have any pipelines: " + project.getName());
+                return;
+            }
             pipelines.clear();
             pipelines.addAll(gitLabProject.getPipelines());
-            viewer.refresh();
+            if (viewer != null && viewer.getTable().isDisposed()) {
+                createTableViewer();
+                composite.layout(true);
+            }
+            if (viewer != null) {
+                viewer.refresh();
+            }
         });
+    }
+
+    private void displayProjectStatusAndHideTable(String text) {
+        if (projectStatus.isDisposed()) {
+            projectStatus = new Link(composite, SWT.NONE);
+            addRepositoryBindingSelectionListener();
+        }
+        projectStatus.setText(text);
+
+        if (viewer != null && !viewer.getTable().isDisposed()) {
+            viewer.getTable().dispose();
+            composite.layout(true);
+        }
     }
 
     private IProject findSelectedProject(ISelection selection) {
@@ -243,7 +284,6 @@ public class GitLabPipelineView extends ViewPart {
         column.setResizable(true);
         column.setMoveable(true);
         return viewerColumn;
-
     }
 
     private void contributeToActionBars() {
@@ -252,23 +292,28 @@ public class GitLabPipelineView extends ViewPart {
     }
 
     private void fillLocalToolBar(IToolBarManager manager) {
-        manager.add(action1);
+        manager.add(refreshAction);
     }
 
     private void makeActions() {
-        action1 = new Action() {
+        refreshAction = new Action() {
             @Override
             public void run() {
+                if (viewer == null) {
+                    return;
+                }
                 fetchPipelines();
+                viewer.refresh();
                 viewer.refresh();
             }
 
         };
-        action1.setText("Update");
-        action1.setToolTipText("Update pipelines");
+        refreshAction.setText("Update");
+        refreshAction.setToolTipText("Update pipelines");
+
         ImageDescriptor image = Activator
                 .getImageDescriptor("platform:/plugin/org.eclipse.ui.views.log/icons/elcl16/refresh.png");
-        action1.setImageDescriptor(image);
+        refreshAction.setImageDescriptor(image);
     }
 
     private void fetchPipelines() {
@@ -295,10 +340,11 @@ public class GitLabPipelineView extends ViewPart {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
     }
 
     @Override
     public void setFocus() {
-        viewer.getControl().setFocus();
+        composite.setFocus();
     }
 }
