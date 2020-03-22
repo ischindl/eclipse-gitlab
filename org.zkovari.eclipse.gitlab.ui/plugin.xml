@@ -36,26 +36,6 @@
             name="GitLab Pipeline">
       </view>
    </extension>
-    <extension
-        point="org.eclipse.mylyn.commons.notifications.ui.notifications">
-     <category
-           icon="icons/obj16/repository.gif"
-           id="myNotificationCategory"
-           label="My Category">
-     </category>
-     <event
-           categoryId="myNotificationCategory"
-           icon="icons/obj16/some-image.gif"
-           id="myEvent"
-           label="Hello World">
-        <defaultHandler
-              sinkId="org.eclipse.mylyn.commons.notifications.sink.Popup">
-        </defaultHandler>
-        <description>
-          This is the description of the event.
-        </description>
-     </event>
-</extension>
 
 
 </plugin>
