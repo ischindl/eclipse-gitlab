@@ -86,7 +86,6 @@ import org.zkovari.eclipse.gitlab.core.Pipeline;
 import org.zkovari.eclipse.gitlab.core.ProjectMapping;
 import org.zkovari.eclipse.gitlab.core.TestReport;
 import org.zkovari.eclipse.gitlab.ui.Activator;
-import org.zkovari.eclipse.gitlab.ui.dialogs.PipelineJobsDialog;
 
 public class GitLabPipelineView extends ViewPart {
 
@@ -457,21 +456,21 @@ public class GitLabPipelineView extends ViewPart {
                 .getImageDescriptor("platform:/plugin/org.eclipse.ui.views.log/icons/elcl16/refresh.png");
         refreshAction.setImageDescriptor(image);
 
-        doubleClickAction = new Action() {
-
-            @Override
-            public void run() {
-                IStructuredSelection selection = viewer.getStructuredSelection();
-                Object obj = selection.getFirstElement();
-                if (!(obj instanceof Pipeline)) {
-                    return;
-                }
-
-                PipelineJobsDialog dialog = new PipelineJobsDialog(composite.getShell(), gitLabProject, (Pipeline) obj);
-                dialog.create();
-                dialog.open();
-            }
-        };
+//        doubleClickAction = new Action() {
+//
+//            @Override
+//            public void run() {
+//                IStructuredSelection selection = viewer.getStructuredSelection();
+//                Object obj = selection.getFirstElement();
+//                if (!(obj instanceof Pipeline)) {
+//                    return;
+//                }
+//
+//                PipelineJobsDialog dialog = new PipelineJobsDialog(composite.getShell(), gitLabProject, (Pipeline) obj);
+//                dialog.create();
+//                dialog.open();
+//            }
+//        };
     }
 
     private void fetchPipelines() {
