@@ -26,6 +26,10 @@ cache:
     REPO_URL: http://download.eclipse.org/releases/2019-06
   script:
     - mvn $MAVEN_CLI_OPTS verify -PUnitTest -Declipse-repo.url=$REPO_URL
+  artifacts:
+    reports:
+      junit:
+        - ./**/target/surefire-reports/TEST-*.xml
 
 .latest test base:
   variables:
@@ -89,6 +93,10 @@ Unit Test Mars:
     - Xvfb :99 -ac &
     - export DISPLAY=:99
     - mvn $MAVEN_CLI_OPTS clean verify -PUITest -Declipse-repo.url=$REPO_URL
+  artifacts:
+    reports:
+      junit:
+        - ./**/target/surefire-reports/TEST-*.xml
 
 UI Test latest:
   extends:
