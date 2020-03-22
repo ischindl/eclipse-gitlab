@@ -76,6 +76,7 @@ Unit Test Neon:
 
 Unit Test Mars:
   extends: .unit test base
+  allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/mars
 
