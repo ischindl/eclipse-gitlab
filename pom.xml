@@ -29,7 +29,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<eclipse-repo.url>http://download.eclipse.org/releases/latest</eclipse-repo.url>
+		<eclipse-repo.url>http://download.eclipse.org/releases/2019-06</eclipse-repo.url>
 	</properties>
 
 	<repositories>
