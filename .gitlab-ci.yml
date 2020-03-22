@@ -22,18 +22,26 @@ cache:
 
 .unit test base:
   stage: test
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2019-06
   script:
     - mvn $MAVEN_CLI_OPTS verify -PUnitTest -Declipse-repo.url=$REPO_URL
+
+.latest test base:
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/latest
 
 Unit Test latest JDK 11:
   extends: .unit test base
   image: openjdk:11-jdk
   allow_failure: true
   script:
-    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest -Declipse-repo.url=$REPO_URL -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
+    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
 
 Unit Test latest:
-  extends: .unit test base
+  extends:
+    - .unit test base
+    - .latest test base
   allow_failure: true
 
 Unit Test 2019-03:
@@ -74,7 +82,7 @@ Unit Test Mars:
 .ui test base:
   stage: test
   variables:
-    REPO_URL: http://download.eclipse.org/releases/latest
+    REPO_URL: http://download.eclipse.org/releases/2019-06
   script:
     - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
     - Xvfb :99 -ac &
@@ -82,7 +90,9 @@ Unit Test Mars:
     - mvn $MAVEN_CLI_OPTS clean verify -PUITest -Declipse-repo.url=$REPO_URL
 
 UI Test latest:
-  extends: .ui test base
+  extends:
+    - .ui test base
+    - .latest test base
   allow_failure: true
 
 UI Test 2019-03:
@@ -128,5 +138,5 @@ Coverage:
     - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
     - Xvfb :99 -ac &
     - export DISPLAY=:99
-    - mvn $MAVEN_CLI_OPTS clean verify -PCoverage -Declipse-repo.url=$REPO_URL
+    - mvn $MAVEN_CLI_OPTS clean verify -PCoverage
     - cat org.zkovari.eclipse.gitlab.coverage.report/target/site/jacoco-aggregate/index.html
