@@ -17,6 +17,7 @@ package org.zkovari.eclipse.gitlab.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -144,6 +145,12 @@ public class PipelineTest {
         assertEquals("newWebUrl", pipeline.getWebUrl());
         assertEquals("newRef", pipeline.getRef());
         assertEquals("newSha", pipeline.getSha());
+    }
+
+    @Test
+    public void testEmptyJobs() {
+        assertNotNull(pipeline.getJobs());
+        assertTrue(pipeline.getJobs().isEmpty());
     }
 
     @Test

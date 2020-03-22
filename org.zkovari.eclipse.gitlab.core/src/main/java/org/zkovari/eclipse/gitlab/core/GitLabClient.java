@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Zsolt Kovari
+ * Copyright 2019-2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -68,6 +68,29 @@ public class GitLabClient {
 
         HttpResponse response = client.execute(httpGet);
         return gson.fromJson(responseHandler.handleResponse(response), GitLabProject.class);
+    }
+
+    public List<Job> getPipelineJobs(String serverUrl, String token, Pipeline pipeline, GitLabProject project)
+            throws IOException {
+        HttpGet httpGet = new HttpGet(
+                serverUrl + "/api/v4/projects/" + project.getId() + "/pipelines/" + pipeline.getId() + "/jobs");
+        httpGet.addHeader(PRIVATE_TOKEN_HEADER, token);
+
+        HttpResponse response = client.execute(httpGet);
+        return gson.fromJson(responseHandler.handleResponse(response), new TypeToken<List<Job>>() {
+        }.getType());
+    }
+
+    public TestReport getPipelineTestReports(String serverUrl, String token, GitLabProject project, Pipeline pipeline)
+            throws IOException {
+        HttpGet httpGet = new HttpGet(
+                serverUrl + "/" + project.getFullPath() + "/pipelines/" + pipeline.getId() + "/test_report.json");
+
+        httpGet.addHeader(PRIVATE_TOKEN_HEADER, token);
+        HttpResponse response = client.execute(httpGet);
+
+        return gson.fromJson(responseHandler.handleResponse(response), TestReport.class);
+
     }
 
 }

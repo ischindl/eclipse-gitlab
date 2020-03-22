@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019-2020 Zsolt Kovari
+ * Copyright 2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -18,19 +18,14 @@ package org.zkovari.eclipse.gitlab.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
-
-public class GitLabProject {
+public class Job {
 
     private String id;
     private String name;
+    List<Artifact> artifacts;
 
-    @SerializedName("path_with_namespace")
-    private String fullPath;
-    private List<Pipeline> pipelines;
-
-    public GitLabProject() {
-        pipelines = new ArrayList<>();
+    public Job() {
+        artifacts = new ArrayList<>();
     }
 
     public String getId() {
@@ -49,22 +44,13 @@ public class GitLabProject {
         this.name = name;
     }
 
-    public List<Pipeline> getPipelines() {
-        return pipelines;
-    }
-
-    public String getFullPath() {
-        return fullPath;
-    }
-
-    public void setFullPath(String fullPath) {
-        this.fullPath = fullPath;
+    public List<Artifact> getArtifacts() {
+        return artifacts;
     }
 
     @Override
     public String toString() {
-        return "GitLabProject [id=" + id + ", name=" + name + ", fullPath=" + fullPath + ", pipelines=" + pipelines
-                + "]";
+        return "Job [id=" + id + ", name=" + name + ", artifacts=" + artifacts + "]";
     }
 
 }

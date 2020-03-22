@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Zsolt Kovari
+ * Copyright 2019-2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -17,6 +17,8 @@ package org.zkovari.eclipse.gitlab.core;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,8 +30,14 @@ public class Pipeline {
     private String status;
     private String ref;
     private String sha;
+    private TestReport testReport;
+    private List<Job> jobs;
 
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+    public Pipeline() {
+        jobs = new ArrayList<>();
+    }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         changeSupport.addPropertyChangeListener(listener);
@@ -81,6 +89,18 @@ public class Pipeline {
 
     public void setSha(String sha) {
         firePropertyChange("sha", this.sha, this.sha = sha);
+    }
+
+    public TestReport getTestReport() {
+        return testReport;
+    }
+
+    public void setTestReport(TestReport testReport) {
+        this.testReport = testReport;
+    }
+
+    public List<Job> getJobs() {
+        return jobs;
     }
 
     @Override
