@@ -55,7 +55,7 @@ public class GitLabPipelineViewTest {
     private void createNewProject(String projectName) {
         bot.menu("File").menu("New").menu("Project...").click();
         bot.shell("New Project").activate();
-        bot.tree().getTreeItem("Project").select().doubleClick();
+        bot.tree().getTreeItem("General").select().expand().click().getNode("Project").doubleClick();
         bot.text(0).setText(projectName);
         bot.button("Finish").click();
     }
