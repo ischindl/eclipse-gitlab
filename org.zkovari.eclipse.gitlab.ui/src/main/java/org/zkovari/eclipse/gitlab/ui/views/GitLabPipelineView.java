@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,35 +50,33 @@ import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.xml.sax.SAXException;
 import org.zkovari.eclipse.gitlab.core.GitLabClient;
@@ -111,28 +111,9 @@ public class GitLabPipelineView extends ViewPart {
     private final ProjectMapping projectMapping;
     private final List<Pipeline> pipelines;
 
-    private Action doubleClickAction;
-
     public GitLabPipelineView() {
         pipelines = new ArrayList<>();
         projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getInstance().getProjectMapping();
-    }
-
-    class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-        @Override
-        public String getColumnText(Object obj, int index) {
-            return getText(obj);
-        }
-
-        @Override
-        public Image getColumnImage(Object obj, int index) {
-            return getImage(obj);
-        }
-
-        @Override
-        public Image getImage(Object obj) {
-            return workbench.getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-        }
     }
 
     @Override
@@ -179,8 +160,9 @@ public class GitLabPipelineView extends ViewPart {
         });
     }
 
+    @SuppressWarnings("rawtypes")
     private void createTableViewer() {
-        viewer = new TableViewer(composite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.FILL);
+        viewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
         createColumns();
 
         viewer.getTable().setHeaderVisible(true);
@@ -192,7 +174,6 @@ public class GitLabPipelineView extends ViewPart {
         viewer.setInput(input);
         hookContextMenu();
         contributeToActionBars();
-        viewer.addDoubleClickListener(event -> doubleClickAction.run());
     }
 
     private void hookContextMenu() {
@@ -206,9 +187,6 @@ public class GitLabPipelineView extends ViewPart {
 
     private void fillContextMenu(IMenuManager manager) {
         manager.add(refreshAction);
-        manager.add(refreshAction);
-        // Other plug-ins can contribute there actions here
-        manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
     private void addProjectSelectionListener() {
@@ -280,145 +258,143 @@ public class GitLabPipelineView extends ViewPart {
     }
 
     private void createColumns() {
-        String[] titles = { "Status", "ID", "Web URL", "Reference", "Reports" };
-        int[] bounds = { 50, 100, 100, 100, 100 };
+        String[] titles = { "", "", "Reference", "" };
+        int[] bounds = { 30, 30, 100, 100 };
 
-        TableViewerColumn columnViewer = createTableViewerColumn(titles[0], bounds[0]);
-        columnViewer.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                return "";
-            }
+        TableViewerColumn statusColumnViewer = createTableViewerColumn(titles[0], bounds[0]);
+        statusColumnViewer.setLabelProvider(new OwnerDrawLabelProvider() {
+
+            private Image image;
 
             @Override
-            public Image getImage(Object element) {
+            protected void measure(Event event, Object element) {
                 Pipeline pipeline = (Pipeline) element;
                 switch (pipeline.getStatus()) {
                 case "running":
-                    return Activator
+                    image = Activator
                             .getImageDescriptor(
                                     "platform:/plugin/org.eclipse.mylyn.commons.ui/icons/eview16/progress/1.png")
                             .createImage();
+                    break;
                 case "pending":
-                    return Activator
+                    image = Activator
                             .getImageDescriptor(
                                     "platform:/plugin/org.eclipse.team.ui/icons/full/ovr/waiting_ovr@2x.png")
                             .createImage();
+                    break;
                 case "success":
-                    return Activator
+                    image = Activator
                             .getImageDescriptor(
                                     "platform:/plugin/org.eclipse.platform.doc.user/images/image92-check.png")
                             .createImage();
+                    break;
                 case "failed":
-                    return Activator.getImageDescriptor(
-                            "platform:/plugin/org.eclipse.jface.source/org/eclipse/jface/dialogs/images/message_error.png")
+                    image = Activator
+                            .getImageDescriptor("platform:/plugin/org.eclipse.jface/icons/full/message_error.png")
                             .createImage();
+                    break;
                 case "canceled":
-                    return Activator
+                    image = Activator
                             .getImageDescriptor("platform:/plugin/org.eclipse.ui.console/icons/full/elcl16/rem_co.png")
                             .createImage();
+                    break;
                 case "skipped":
-                    return Activator
-                            .getImageDescriptor(
-                                    "platform:/plugin/org.eclipse.mylyn.commons.ui/icons/elcl16/filter-complete.gif")
-                            .createImage();
                 default:
-                    return null;
+                    image = Activator
+                            .getImageDescriptor(
+                                    "platform:/plugin/org.eclipse.ui.ide/icons/full/obj16/incomplete_tsk.png")
+                            .createImage();
                 }
-
-                // platform:/plugin/org.eclipse.egit.ui/icons/obj16/fetch.png
             }
 
-        });
-
-        columnViewer = createTableViewerColumn(titles[1], bounds[1]);
-        columnViewer.setLabelProvider(new ColumnLabelProvider() {
             @Override
-            public String getText(Object element) {
-                Pipeline p = (Pipeline) element;
-                return p.getId();
+            protected void paint(Event event, Object element) {
+                Rectangle bounds = event.getBounds();
+                event.gc.drawImage(image, bounds.x, bounds.y);
             }
 
         });
 
-        columnViewer = createTableViewerColumn(titles[2], bounds[2]);
-        columnViewer.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                Pipeline p = (Pipeline) element;
-                return p.getWebUrl();
+        TableViewerColumn webRefColumnViewer = createTableViewerColumn(titles[1], bounds[1]);
+        ColumnImageMouseListener columnMouseListener = new ColumnImageMouseListener(webRefColumnViewer, 1, cell -> {
+            try {
+                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser()
+                        .openURL(new URL(((Pipeline) cell.getElement()).getWebUrl()));
+            } catch (PartInitException | MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         });
+        webRefColumnViewer.getViewer().getControl().addMouseListener(columnMouseListener);
+        webRefColumnViewer.getViewer().getControl().addMouseMoveListener(columnMouseListener);
+        webRefColumnViewer.setLabelProvider(new CellImageDrawLabelProvider(
+                "platform:/plugin/org.eclipse.ui.browser/icons/obj16/external_browser.png"));
 
-        columnViewer = createTableViewerColumn(titles[3], bounds[3]);
-        columnViewer.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                Pipeline p = (Pipeline) element;
-                return p.getRef();
-            }
-
-        });
-
-        columnViewer = createTableViewerColumn(titles[4], bounds[4]);
-        columnViewer.setLabelProvider(new ColumnLabelProvider() {
+        TableViewerColumn refColumnViewer = createTableViewerColumn(titles[2], bounds[2]);
+        refColumnViewer.setLabelProvider(new StyledCellLabelProvider() {
 
             @Override
             public void update(ViewerCell cell) {
                 Pipeline pipeline = (Pipeline) cell.getElement();
-                TableItem item = (TableItem) cell.getItem();
-                Button button = new Button((Composite) cell.getControl(), SWT.PUSH);
-                button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-                button.setText("Test report");
-                button.addListener(SWT.Selection, event -> {
-                    switch (event.type) {
-                    case SWT.Selection:
-
-                        JAXBContext contextObj;
-                        JUnitPlugin.getDefault().showTestRunnerViewPartInActivePage();
-                        try {
-                            contextObj = JAXBContext.newInstance(TestReport.class);
-                            Marshaller marshallerObj = contextObj.createMarshaller();
-                            marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-                            StringWriter sw = new StringWriter();
-                            marshallerObj.marshal(pipeline.getTestReport(), sw);
-                            String junitXmlString = sw.toString();
-
-                            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-                            SAXParser parser = parserFactory.newSAXParser();
-                            TestRunHandler handler = new TestRunHandler();
-                            InputStream targetStream = new ByteArrayInputStream(junitXmlString.getBytes());
-                            parser.parse(targetStream, handler);
-                            TestRunSession session = handler.getTestRunSession();
-                            JUnitCorePlugin.getModel().addTestRunSession(session);
-
-                            TestRunnerViewPart view = (TestRunnerViewPart) JUnitPlugin.getActivePage()
-                                    .findView(TestRunnerViewPart.NAME);
-                            view.showTestResultsView();
-
-                        } catch (JAXBException | ParserConfigurationException | SAXException | IOException e2) {
-                            // TODO Auto-generated catch block
-                            e2.printStackTrace();
-                        }
-
-                        break;
-                    }
-                });
-
-                TableEditor editor = new TableEditor(item.getParent());
-                editor.horizontalAlignment = SWT.LEFT;
-                editor.minimumWidth = button.getSize().x + 100;
-                editor.setEditor(button, item, cell.getColumnIndex());
-                editor.layout();
-            }
-
-            @Override
-            public String getToolTipText(Object element) {
-                return "Show jobs and artifacts";
+                cell.setText(pipeline.getRef());
+                StyleRange myStyledRange = new StyleRange(16, 2, null,
+                        Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE | SWT.UNDERLINE_LINK));
+                StyleRange[] range = { myStyledRange };
+                cell.setStyleRanges(range);
+                super.update(cell);
             }
 
         });
+
+        TableViewerColumn artifactsColumnViewer = createTableViewerColumn(titles[3], bounds[3]);
+        columnMouseListener = new ColumnImageMouseListener(artifactsColumnViewer, 3, cell -> {
+            Pipeline pipeline = (Pipeline) cell.getElement();
+            Optional<String> token = GitLabUtils.getToken();
+
+            GitLabClient gitLabClient = new GitLabClient();
+            TestReport testReport;
+            try {
+                testReport = gitLabClient.getPipelineTestReports("https://gitlab.com", token.get(), gitLabProject,
+                        pipeline);
+                pipeline.setTestReport(testReport);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            JAXBContext contextObj;
+            JUnitPlugin.getDefault().showTestRunnerViewPartInActivePage();
+            try {
+                contextObj = JAXBContext.newInstance(TestReport.class);
+                Marshaller marshallerObj = contextObj.createMarshaller();
+                marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+                StringWriter sw = new StringWriter();
+                marshallerObj.marshal(pipeline.getTestReport(), sw);
+                String junitXmlString = sw.toString();
+
+                SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+                SAXParser parser = parserFactory.newSAXParser();
+                TestRunHandler handler = new TestRunHandler();
+                InputStream targetStream = new ByteArrayInputStream(junitXmlString.getBytes());
+                parser.parse(targetStream, handler);
+                TestRunSession session = handler.getTestRunSession();
+                JUnitCorePlugin.getModel().addTestRunSession(session);
+
+                TestRunnerViewPart view = (TestRunnerViewPart) JUnitPlugin.getActivePage()
+                        .findView(TestRunnerViewPart.NAME);
+                view.showTestResultsView();
+
+            } catch (JAXBException | ParserConfigurationException | SAXException | IOException e2) {
+                // TODO Auto-generated catch block
+                e2.printStackTrace();
+            }
+
+        });
+        artifactsColumnViewer.getViewer().getControl().addMouseListener(columnMouseListener);
+        artifactsColumnViewer.getViewer().getControl().addMouseMoveListener(columnMouseListener);
+        artifactsColumnViewer.setLabelProvider(
+                new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.team.ui/icons/full/elcl16/next_nav.png"));
 
     }
 
@@ -428,7 +404,6 @@ public class GitLabPipelineView extends ViewPart {
         column.setText(title);
         column.setWidth(bound);
         column.setResizable(true);
-        column.setMoveable(true);
         return viewerColumn;
     }
 
@@ -445,8 +420,9 @@ public class GitLabPipelineView extends ViewPart {
                     return;
                 }
                 fetchPipelines();
+                // TODO why double?
                 viewer.refresh();
-                viewer.refresh();
+//                viewer.refresh();
             }
 
         };
@@ -455,22 +431,6 @@ public class GitLabPipelineView extends ViewPart {
         ImageDescriptor image = Activator
                 .getImageDescriptor("platform:/plugin/org.eclipse.ui.views.log/icons/elcl16/refresh.png");
         refreshAction.setImageDescriptor(image);
-
-//        doubleClickAction = new Action() {
-//
-//            @Override
-//            public void run() {
-//                IStructuredSelection selection = viewer.getStructuredSelection();
-//                Object obj = selection.getFirstElement();
-//                if (!(obj instanceof Pipeline)) {
-//                    return;
-//                }
-//
-//                PipelineJobsDialog dialog = new PipelineJobsDialog(composite.getShell(), gitLabProject, (Pipeline) obj);
-//                dialog.create();
-//                dialog.open();
-//            }
-//        };
     }
 
     private void fetchPipelines() {
@@ -485,12 +445,6 @@ public class GitLabPipelineView extends ViewPart {
             List<Pipeline> newPipelines = gitLabClient.getPipelines("https://gitlab.com", token.get(), gitLabProject);
             gitLabProject.getPipelines().clear();
             gitLabProject.getPipelines().addAll(newPipelines);
-
-            for (Pipeline pipeline : gitLabProject.getPipelines()) {
-                TestReport testReport = gitLabClient.getPipelineTestReports("https://gitlab.com", token.get(),
-                        gitLabProject, pipeline);
-                pipeline.setTestReport(testReport);
-            }
 
             pipelines.clear();
             pipelines.addAll(newPipelines);
