@@ -26,6 +26,14 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
+	<repositories>
+		<repository>
+        <id>Orbit</id>
+        <url>https://download.eclipse.org/tools/orbit/downloads/drops/R20200224183213/repository/</url>
+        <layout>p2</layout>
+     </repository>
+	</repositories>
+
 	<artifactId>org.zkovari.eclipse.gitlab.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
 
