@@ -7,13 +7,13 @@ Automatic-Module-Name: org.zkovari.eclipse.gitlab.core.test
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.equinox.security,
  org.zkovari.eclipse.gitlab.core,
- org.mockito;bundle-version="2.23.0",
+ org.mockito,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.jgit,
- org.hamcrest.core;bundle-version="1.3.0"
+ org.hamcrest.core
 Export-Package: org.zkovari.eclipse.gitlab.core.test,
  org.zkovari.eclipse.gitlab.core.test.security
 Import-Package: org.junit;version="4.12.0",

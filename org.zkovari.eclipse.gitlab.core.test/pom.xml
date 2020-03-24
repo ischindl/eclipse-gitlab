@@ -14,43 +14,43 @@
   the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.zkovari.eclipse</groupId>
-		<artifactId>org.zkovari.eclipse.gitlab.parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.zkovari.eclipse</groupId>
+        <artifactId>org.zkovari.eclipse.gitlab.parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-	<repositories>
-		<repository>
+    <repositories>
+        <repository>
         <id>Orbit</id>
         <url>https://download.eclipse.org/tools/orbit/downloads/drops/R20190602212107/repository/</url>
         <layout>p2</layout>
      </repository>
-	</repositories>
+    </repositories>
 
-	<artifactId>org.zkovari.eclipse.gitlab.core.test</artifactId>
-	<packaging>eclipse-test-plugin</packaging>
+    <artifactId>org.zkovari.eclipse.gitlab.core.test</artifactId>
+    <packaging>eclipse-test-plugin</packaging>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<product>org.eclipse.sdk.ide</product>
-					<application>org.eclipse.ui.ide.workbench</application>
-					<argLine>${tycho.testArgLine}</argLine>
-					<environmentVariables>
-						<org.zkovari.eclipse.gitlabServerEnvironment>UNIT_TEST</org.zkovari.eclipse.gitlabServerEnvironment>
-					</environmentVariables>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-surefire-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <product>org.eclipse.sdk.ide</product>
+                    <application>org.eclipse.ui.ide.workbench</application>
+                    <argLine>${tycho.testArgLine}</argLine>
+                    <environmentVariables>
+                        <org.zkovari.eclipse.gitlabServerEnvironment>UNIT_TEST</org.zkovari.eclipse.gitlabServerEnvironment>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
