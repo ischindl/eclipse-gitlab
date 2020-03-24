@@ -337,10 +337,13 @@ public class GitLabPipelineView extends ViewPart {
             public void update(ViewerCell cell) {
                 Pipeline pipeline = (Pipeline) cell.getElement();
                 cell.setText(pipeline.getRef());
-                StyleRange myStyledRange = new StyleRange(16, 2, null,
-                        Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE | SWT.UNDERLINE_LINK));
-                StyleRange[] range = { myStyledRange };
+
+                StyleRange refStyledRange = new StyleRange(0, pipeline.getRef().length(),
+                        Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE), null);
+                refStyledRange.underline = true;
+                StyleRange[] range = { refStyledRange };
                 cell.setStyleRanges(range);
+
                 super.update(cell);
             }
 
