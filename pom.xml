@@ -62,6 +62,20 @@
 		</profile>
 
 		<profile>
+			<id>Test</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<modules>
+				<module>org.zkovari.eclipse.gitlab.core</module>
+				<module>org.zkovari.eclipse.gitlab.core.test</module>
+				<module>org.zkovari.eclipse.gitlab.ui</module>
+				<module>org.zkovari.eclipse.gitlab.ui.test</module>
+			</modules>
+		</profile>
+
+		<profile>
 			<id>UnitTest</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -89,7 +103,7 @@
 
 		<profile>
 			<id>Coverage</id>
-			
+
 			<modules>
 				<module>org.zkovari.eclipse.gitlab.core</module>
 				<module>org.zkovari.eclipse.gitlab.core.test</module>
@@ -97,7 +111,7 @@
 				<module>org.zkovari.eclipse.gitlab.ui.test</module>
 				<module>org.zkovari.eclipse.gitlab.coverage.report</module>
 			</modules>
-			
+
 			<build>
 				<plugins>
 					<plugin>
