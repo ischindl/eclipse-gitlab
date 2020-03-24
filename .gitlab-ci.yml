@@ -48,7 +48,7 @@ Test and coverage:
     - mvn $MAVEN_CLI_OPTS clean verify -PCoverage
     - cat org.zkovari.eclipse.gitlab.coverage.report/target/site/jacoco-aggregate/index.html
 
-Unit Test latest JDK 11:
+Unit Test JDK 11:
   extends: .test job template
   image: openjdk:11-jdk
   allow_failure: true
@@ -59,6 +59,16 @@ Test latest:
   extends:
     - .test job template
     - .latest eclipse job template
+
+Test 2019-12:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2019-12
+
+Test 2019-09:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2019-09
 
 Test 2019-03:
   extends: .test job template
