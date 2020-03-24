@@ -20,71 +20,7 @@ cache:
   paths:
     - $CI_PROJECT_DIR/.m2/repository
 
-.unit test base:
-  stage: test
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/2019-06
-  script:
-    - mvn $MAVEN_CLI_OPTS verify -PUnitTest -Declipse-repo.url=$REPO_URL
-  artifacts:
-    reports:
-      junit:
-        - ./**/target/surefire-reports/TEST-*.xml
-
-.latest test base:
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/latest
-
-Unit Test latest JDK 11:
-  extends: .unit test base
-  image: openjdk:11-jdk
-  allow_failure: true
-  script:
-    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
-
-Unit Test latest:
-  extends:
-    - .unit test base
-    - .latest test base
-  allow_failure: true
-
-Unit Test 2019-03:
-  extends: .unit test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/2019-03
-
-Unit Test 2018-12:
-  extends: .unit test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/2018-12
-
-Unit Test 2018-09:
-  extends: .unit test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/2018-09
-
-Unit Test Photon:
-  extends: .unit test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/photon
-
-Unit Test Oxygen:
-  extends: .unit test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/oxygen
-
-Unit Test Neon:
-  extends: .unit test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/neon
-
-Unit Test Mars:
-  extends: .unit test base
-  allow_failure: true
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/mars
-
-.ui test base:
+.test job template:
   stage: test
   variables:
     REPO_URL: http://download.eclipse.org/releases/2019-06
@@ -92,60 +28,72 @@ Unit Test Mars:
     - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
     - Xvfb :99 -ac &
     - export DISPLAY=:99
-    - mvn $MAVEN_CLI_OPTS clean verify -PUITest -Declipse-repo.url=$REPO_URL
+    - mvn $MAVEN_CLI_OPTS verify -PUITest -Declipse-repo.url=$REPO_URL
   artifacts:
     reports:
       junit:
         - ./**/target/surefire-reports/TEST-*.xml
 
-UI Test latest:
-  extends:
-    - .ui test base
-    - .latest test base
+.latest eclipse job template:
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/latest
   allow_failure: true
 
-UI Test 2019-03:
-  extends: .ui test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/2019-03
-
-UI Test 2018-12:
-  extends: .ui test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/2018-12
-
-UI Test 2018-09:
-  extends: .ui test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/2018-09
-
-UI Test Photon:
-  extends: .ui test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/photon
-
-UI Test Oxygen:
-  extends: .ui test base
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/oxygen
-
-UI Test Neon:
-  extends: .ui test base
-  allow_failure: true
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/neon
-
-UI Test Mars:
-  extends: .ui test base
-  allow_failure: true
-  variables:
-    REPO_URL: http://download.eclipse.org/releases/mars
-
-Coverage:
-  extends: .ui test base
+Test and coverage:
+  extends: .test job template
   script:
     - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
     - Xvfb :99 -ac &
     - export DISPLAY=:99
     - mvn $MAVEN_CLI_OPTS clean verify -PCoverage
     - cat org.zkovari.eclipse.gitlab.coverage.report/target/site/jacoco-aggregate/index.html
+
+Unit Test latest JDK 11:
+  extends: .test job template
+  image: openjdk:11-jdk
+  allow_failure: true
+  script:
+    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
+
+Test latest:
+  extends:
+    - .test job template
+    - .latest eclipse job template
+
+Test 2019-03:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2019-03
+
+Test 2018-12:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2018-12
+
+Test 2018-09:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/2018-09
+
+Test Photon:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/photon
+
+Test Oxygen:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/oxygen
+
+Test Neon:
+  extends: .test job template
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/neon
+
+Test Mars:
+  extends: .test job template
+  allow_failure: true
+  variables:
+    REPO_URL: http://download.eclipse.org/releases/mars
+
+
