@@ -394,7 +394,7 @@ public class GitLabPipelineView extends ViewPart {
         artifactsColumnViewer.getViewer().getControl().addMouseListener(columnMouseListener);
         artifactsColumnViewer.getViewer().getControl().addMouseMoveListener(columnMouseListener);
         artifactsColumnViewer.setLabelProvider(
-                new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.team.ui/icons/full/elcl16/next_nav.png"));
+                new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.jdt.junit/icons/full/eview16/junit.gif"));
 
     }
 
