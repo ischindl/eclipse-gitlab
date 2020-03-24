@@ -23,6 +23,9 @@ import org.zkovari.eclipse.gitlab.ui.Activator;
 
 public class CellImageDrawLabelProvider extends OwnerDrawLabelProvider {
 
+    public static final int PADDING_X = 5;
+    public static final int PADDING_Y = 5;
+
     private final String resourceImagePath;
     private Image image;
 
@@ -38,7 +41,7 @@ public class CellImageDrawLabelProvider extends OwnerDrawLabelProvider {
     @Override
     protected void paint(Event event, Object element) {
         Rectangle bounds = event.getBounds();
-        event.gc.drawImage(image, bounds.x, bounds.y);
+        event.gc.drawImage(image, bounds.x + PADDING_X, bounds.y + PADDING_Y);
     }
 
 }

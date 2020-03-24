@@ -15,6 +15,9 @@
  ******************************************************************************/
 package org.zkovari.eclipse.gitlab.ui.views;
 
+import static org.zkovari.eclipse.gitlab.ui.views.CellImageDrawLabelProvider.PADDING_X;
+import static org.zkovari.eclipse.gitlab.ui.views.CellImageDrawLabelProvider.PADDING_Y;
+
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -28,6 +31,10 @@ import org.zkovari.eclipse.gitlab.ui.Activator;
 
 public class ColumnImageMouseListener implements MouseListener, MouseMoveListener {
 
+    private static final Cursor CURSOR_ARROW = new Cursor(Activator.getDefault().getWorkbench().getDisplay(),
+            SWT.CURSOR_ARROW);
+    private static final Cursor CURSOR_HAND = new Cursor(Activator.getDefault().getWorkbench().getDisplay(),
+            SWT.CURSOR_HAND);
     private final TableViewerColumn tableViewerColumn;
     private final int columnIndex;
     private final CellMouseListenerAction action;
@@ -51,7 +58,7 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
         if (cell != null && cell.getColumnIndex() == columnIndex) {
             Rectangle cellBounds = cell.getBounds();
             // TODO get rect from image' actual position in cell
-            Rectangle imageRect = new Rectangle(cellBounds.x, cellBounds.y, 16, 16);
+            Rectangle imageRect = new Rectangle(cellBounds.x + PADDING_X, cellBounds.y + PADDING_Y, 16, 16);
             if (imageRect.contains(point)) {
                 action.run(cell);
             }
@@ -71,15 +78,15 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
         if (cell != null && cell.getColumnIndex() == columnIndex) {
             Rectangle cellBounds = cell.getBounds();
             // TODO get rect from image' actual position in cell
-            Rectangle imageRect = new Rectangle(cellBounds.x, cellBounds.y, 16, 16);
+            Rectangle imageRect = new Rectangle(cellBounds.x + PADDING_X, cellBounds.y + PADDING_Y, 16, 16);
             if (imageRect.contains(point)) {
-                Cursor cursor = new Cursor(Activator.getDefault().getWorkbench().getDisplay(), SWT.CURSOR_HAND);
-                Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell().setCursor(cursor);
+                Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell().setCursor(CURSOR_HAND);
             } else {
-                Cursor cursor = new Cursor(Activator.getDefault().getWorkbench().getDisplay(), SWT.CURSOR_ARROW);
-                Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell().setCursor(cursor);
+                Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell()
+                        .setCursor(CURSOR_ARROW);
             }
         }
+
     }
 
 }

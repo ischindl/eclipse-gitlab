@@ -258,8 +258,8 @@ public class GitLabPipelineView extends ViewPart {
     }
 
     private void createColumns() {
-        String[] titles = { "", "", "Reference", "" };
-        int[] bounds = { 30, 30, 100, 100 };
+        String[] titles = { "", "", "", "" };
+        int[] bounds = { 40, 40, 100, 40 };
 
         TableViewerColumn statusColumnViewer = createTableViewerColumn(titles[0], bounds[0]);
         statusColumnViewer.setLabelProvider(new OwnerDrawLabelProvider() {
@@ -310,7 +310,7 @@ public class GitLabPipelineView extends ViewPart {
             @Override
             protected void paint(Event event, Object element) {
                 Rectangle bounds = event.getBounds();
-                event.gc.drawImage(image, bounds.x, bounds.y);
+                event.gc.drawImage(image, bounds.x + 5, bounds.y + 5);
             }
 
         });
@@ -427,7 +427,6 @@ public class GitLabPipelineView extends ViewPart {
                 viewer.refresh();
 //                viewer.refresh();
             }
-
         };
         refreshAction.setText("Update");
         refreshAction.setToolTipText("Update pipelines");
