@@ -74,7 +74,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -93,9 +92,6 @@ public class GitLabPipelineView extends ViewPart {
      * The ID of the view as specified by the extension.
      */
     public static final String ID = "org.zkovari.eclipse.gitlab.ui.views.GitLabPipelineView";
-
-    @Inject
-    IWorkbench workbench;
 
     @Inject
     UISynchronize sync;
