@@ -62,11 +62,13 @@ Test latest:
 
 Test 2019-12:
   extends: .test job template
+  allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/2019-12
 
 Test 2019-09:
   extends: .test job template
+  allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/2019-09
 
