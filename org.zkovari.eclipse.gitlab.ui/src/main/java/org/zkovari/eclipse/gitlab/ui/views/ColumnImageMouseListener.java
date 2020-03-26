@@ -24,12 +24,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.zkovari.eclipse.gitlab.ui.Activator;
 
-public class ColumnImageMouseListener implements MouseListener, MouseMoveListener {
+public class ColumnImageMouseListener implements MouseListener, MouseMoveListener, MouseTrackListener {
 
     private static final Cursor CURSOR_ARROW = new Cursor(Activator.getDefault().getWorkbench().getDisplay(),
             SWT.CURSOR_ARROW);
@@ -81,13 +82,31 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
             // TODO get rect from image' actual position in cell
             Rectangle imageRect = new Rectangle(cellBounds.x + PADDING_X, cellBounds.y + PADDING_Y, 16, 16);
             if (imageRect.contains(point)) {
-                Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell().setCursor(CURSOR_HAND);
+                setCursor(CURSOR_HAND);
             } else {
-                Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell()
-                        .setCursor(CURSOR_ARROW);
+                setCursor(CURSOR_ARROW);
             }
         }
 
+    }
+
+    @Override
+    public void mouseEnter(MouseEvent e) {
+        //
+    }
+
+    @Override
+    public void mouseExit(MouseEvent e) {
+        setCursor(CURSOR_ARROW);
+    }
+
+    @Override
+    public void mouseHover(MouseEvent e) {
+        //
+    }
+
+    private void setCursor(Cursor cursor) {
+        Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell().setCursor(cursor);
     }
 
 }

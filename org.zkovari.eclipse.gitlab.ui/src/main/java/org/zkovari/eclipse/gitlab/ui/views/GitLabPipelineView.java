@@ -322,8 +322,7 @@ public class GitLabPipelineView extends ViewPart {
                 Activator.logError(ex.getMessage());
             }
         });
-        webRefColumnViewer.getViewer().getControl().addMouseListener(columnMouseListener);
-        webRefColumnViewer.getViewer().getControl().addMouseMoveListener(columnMouseListener);
+        addMouseListener(webRefColumnViewer, columnMouseListener);
         webRefColumnViewer.setLabelProvider(new CellImageDrawLabelProvider(
                 "platform:/plugin/org.eclipse.ui.browser/icons/obj16/external_browser.png"));
 
@@ -389,11 +388,16 @@ public class GitLabPipelineView extends ViewPart {
             }
 
         });
-        artifactsColumnViewer.getViewer().getControl().addMouseListener(columnMouseListener);
-        artifactsColumnViewer.getViewer().getControl().addMouseMoveListener(columnMouseListener);
+        addMouseListener(artifactsColumnViewer, columnMouseListener);
         artifactsColumnViewer.setLabelProvider(
                 new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.jdt.junit/icons/full/eview16/junit.gif"));
 
+    }
+
+    private void addMouseListener(TableViewerColumn columnViewer, ColumnImageMouseListener mouseListener) {
+        columnViewer.getViewer().getControl().addMouseListener(mouseListener);
+        columnViewer.getViewer().getControl().addMouseMoveListener(mouseListener);
+        columnViewer.getViewer().getControl().addMouseTrackListener(mouseListener);
     }
 
     private TableViewerColumn createTableViewerColumn(String title, int bound) {
