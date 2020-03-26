@@ -48,7 +48,7 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
     }
 
     @Override
-    public void mouseDoubleClick(MouseEvent e) {
+    public void mouseDoubleClick(MouseEvent event) {
         //
     }
 
@@ -69,7 +69,7 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
     }
 
     @Override
-    public void mouseUp(MouseEvent e) {
+    public void mouseUp(MouseEvent event) {
         //
     }
 
@@ -91,17 +91,17 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
     }
 
     @Override
-    public void mouseEnter(MouseEvent e) {
+    public void mouseEnter(MouseEvent event) {
         //
     }
 
     @Override
-    public void mouseExit(MouseEvent e) {
+    public void mouseExit(MouseEvent event) {
         setCursor(CURSOR_ARROW);
     }
 
     @Override
-    public void mouseHover(MouseEvent e) {
+    public void mouseHover(MouseEvent event) {
         //
     }
 

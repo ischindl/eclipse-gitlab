@@ -15,10 +15,7 @@
  ******************************************************************************/
 package org.zkovari.eclipse.gitlab.ui.views;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,12 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
@@ -42,11 +33,6 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.jdt.internal.junit.JUnitCorePlugin;
-import org.eclipse.jdt.internal.junit.model.TestRunHandler;
-import org.eclipse.jdt.internal.junit.model.TestRunSession;
-import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
-import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -77,7 +63,6 @@ import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.xml.sax.SAXException;
 import org.zkovari.eclipse.gitlab.core.GitLabClient;
 import org.zkovari.eclipse.gitlab.core.GitLabProject;
 import org.zkovari.eclipse.gitlab.core.GitLabUtils;
@@ -106,10 +91,12 @@ public class GitLabPipelineView extends ViewPart {
 
     private final ProjectMapping projectMapping;
     private final List<Pipeline> pipelines;
+    private final TestReportDisplayer testReportDisplayer;
 
     public GitLabPipelineView() {
         pipelines = new ArrayList<>();
         projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getInstance().getProjectMapping();
+        testReportDisplayer = new TestReportDisplayer();
     }
 
     @Override
@@ -360,38 +347,12 @@ public class GitLabPipelineView extends ViewPart {
                 Activator.logError(ex.getMessage());
             }
 
-            JAXBContext contextObj;
-            JUnitPlugin.showTestRunnerViewPartInActivePage();
-            try {
-                contextObj = JAXBContext.newInstance(TestReport.class);
-                Marshaller marshallerObj = contextObj.createMarshaller();
-                marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-                StringWriter sw = new StringWriter();
-                marshallerObj.marshal(pipeline.getTestReport(), sw);
-                String junitXmlString = sw.toString();
-
-                SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-                SAXParser parser = parserFactory.newSAXParser();
-                TestRunHandler handler = new TestRunHandler();
-                InputStream targetStream = new ByteArrayInputStream(junitXmlString.getBytes());
-                parser.parse(targetStream, handler);
-                TestRunSession session = handler.getTestRunSession();
-                JUnitCorePlugin.getModel().addTestRunSession(session);
-
-                TestRunnerViewPart view = (TestRunnerViewPart) JUnitPlugin.getActivePage()
-                        .findView(TestRunnerViewPart.NAME);
-                view.showTestResultsView();
-
-            } catch (JAXBException | ParserConfigurationException | SAXException | IOException ex) {
-                Activator.logError(ex.getMessage());
-            }
+            testReportDisplayer.display(pipeline.getTestReport());
 
         });
         addMouseListener(artifactsColumnViewer, columnMouseListener);
         artifactsColumnViewer.setLabelProvider(
                 new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.jdt.junit/icons/full/eview16/junit.gif"));
-
     }
 
     private void addMouseListener(TableViewerColumn columnViewer, ColumnImageMouseListener mouseListener) {
@@ -422,9 +383,7 @@ public class GitLabPipelineView extends ViewPart {
                     return;
                 }
                 fetchPipelines();
-                // TODO why double?
                 viewer.refresh();
-//                viewer.refresh();
             }
         };
         refreshAction.setText("Update");
