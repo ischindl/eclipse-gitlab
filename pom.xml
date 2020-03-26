@@ -58,6 +58,8 @@
 				<module>org.zkovari.eclipse.gitlab.core.test</module>
 				<module>org.zkovari.eclipse.gitlab.ui</module>
 				<module>org.zkovari.eclipse.gitlab.ui.test</module>
+				<module>org.zkovari.eclipse.gitlab.feature</module>
+				<module>org.zkovari.eclipse.gitlab.repository</module>
 			</modules>
 		</profile>
 
