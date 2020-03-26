@@ -137,10 +137,9 @@ public class GitLabPipelineView extends ViewPart {
                         // TODO handle if token is missing
                         gitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get());
                         fetchPipelines();
-                    } catch (IOException e1) {
+                    } catch (IOException ex) {
                         gitLabProject = null;
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                        Activator.logError(ex.getMessage());
                     }
                     sync.asyncExec(() -> {
                         if (viewer == null || viewer.getTable().isDisposed()) {
@@ -250,6 +249,9 @@ public class GitLabPipelineView extends ViewPart {
         IAdaptable adaptable = (IAdaptable) element;
         Object adapter = adaptable.getAdapter(IResource.class);
         IResource resource = (IResource) adapter;
+        if (resource == null) {
+            return null;
+        }
         return resource.getProject();
     }
 
@@ -316,9 +318,8 @@ public class GitLabPipelineView extends ViewPart {
             try {
                 PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser()
                         .openURL(new URL(((Pipeline) cell.getElement()).getWebUrl()));
-            } catch (PartInitException | MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (PartInitException | MalformedURLException ex) {
+                Activator.logError(ex.getMessage());
             }
         });
         webRefColumnViewer.getViewer().getControl().addMouseListener(columnMouseListener);
@@ -356,13 +357,12 @@ public class GitLabPipelineView extends ViewPart {
                 testReport = gitLabClient.getPipelineTestReports("https://gitlab.com", token.get(), gitLabProject,
                         pipeline);
                 pipeline.setTestReport(testReport);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (IOException ex) {
+                Activator.logError(ex.getMessage());
             }
 
             JAXBContext contextObj;
-            JUnitPlugin.getDefault().showTestRunnerViewPartInActivePage();
+            JUnitPlugin.showTestRunnerViewPartInActivePage();
             try {
                 contextObj = JAXBContext.newInstance(TestReport.class);
                 Marshaller marshallerObj = contextObj.createMarshaller();
@@ -384,9 +384,8 @@ public class GitLabPipelineView extends ViewPart {
                         .findView(TestRunnerViewPart.NAME);
                 view.showTestResultsView();
 
-            } catch (JAXBException | ParserConfigurationException | SAXException | IOException e2) {
-                // TODO Auto-generated catch block
-                e2.printStackTrace();
+            } catch (JAXBException | ParserConfigurationException | SAXException | IOException ex) {
+                Activator.logError(ex.getMessage());
             }
 
         });
@@ -446,9 +445,8 @@ public class GitLabPipelineView extends ViewPart {
 
             pipelines.clear();
             pipelines.addAll(newPipelines);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Activator.logError(ex.getMessage());
         }
 
     }
