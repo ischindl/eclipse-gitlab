@@ -55,7 +55,8 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
     public void mouseDown(MouseEvent event) {
         Point point = new Point(event.x, event.y);
         ViewerCell cell = tableViewerColumn.getViewer().getCell(point);
-        if (cell != null && cell.getColumnIndex() == columnIndex) {
+
+        if (event.button == 1 && cell != null && cell.getColumnIndex() == columnIndex) {
             Rectangle cellBounds = cell.getBounds();
             // TODO get rect from image' actual position in cell
             Rectangle imageRect = new Rectangle(cellBounds.x + PADDING_X, cellBounds.y + PADDING_Y, 16, 16);
