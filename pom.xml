@@ -48,6 +48,20 @@
 
 	<profiles>
 		<profile>
+			<id>Core</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<modules>
+				<module>org.zkovari.eclipse.gitlab.core</module>
+				<module>org.zkovari.eclipse.gitlab.ui</module>
+				<module>org.zkovari.eclipse.gitlab.feature</module>
+				<module>org.zkovari.eclipse.gitlab.repository</module>
+			</modules>
+		</profile>
+	
+		<profile>
 			<id>Dev</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
