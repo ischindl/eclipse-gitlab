@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.resources.IProject;
@@ -30,6 +32,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -74,6 +77,9 @@ public class GitLabPipelineView extends ViewPart {
      * The ID of the view as specified by the extension.
      */
     public static final String ID = "org.zkovari.eclipse.gitlab.ui.views.GitLabPipelineView";
+
+    @Inject
+    private UISynchronize sync;
 
     private Composite composite;
     private TableViewer viewer;
@@ -127,7 +133,7 @@ public class GitLabPipelineView extends ViewPart {
                         gitLabProject = null;
                         Activator.logError(ex.getMessage());
                     }
-                    Display.getCurrent().asyncExec(() -> {
+                    sync.asyncExec(() -> {
                         if (viewer == null || viewer.getTable().isDisposed()) {
                             createTableViewer();
                             projectStatus.dispose();
