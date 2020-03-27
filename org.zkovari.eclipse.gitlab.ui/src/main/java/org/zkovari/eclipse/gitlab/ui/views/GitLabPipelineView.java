@@ -113,6 +113,11 @@ public class GitLabPipelineView extends ViewPart {
         contributeToActionBars();
     }
 
+    @Override
+    public void setFocus() {
+        composite.setFocus();
+    }
+
     private void addRepositoryBindingSelectionListener() {
         projectStatus.addSelectionListener(new SelectionAdapter() {
 
@@ -199,7 +204,7 @@ public class GitLabPipelineView extends ViewPart {
             }
             pipelines.clear();
             pipelines.addAll(gitLabProject.getPipelines());
-            if (viewer != null && viewer.getTable().isDisposed()) {
+            if (viewer == null || viewer.getTable().isDisposed()) {
                 createTableViewer();
                 composite.layout(true);
             }
@@ -414,8 +419,4 @@ public class GitLabPipelineView extends ViewPart {
 
     }
 
-    @Override
-    public void setFocus() {
-        composite.setFocus();
-    }
 }
