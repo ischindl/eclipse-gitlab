@@ -28,7 +28,7 @@ cache:
     - apt-get update -qq && apt-get install -y -qq xvfb iceweasel
     - Xvfb :99 -ac &
     - export DISPLAY=:99
-    - mvn $MAVEN_CLI_OPTS verify -PUITest -Declipse-repo.url=$REPO_URL
+    - mvn $MAVEN_CLI_OPTS verify -PTest -Declipse-repo.url=$REPO_URL
   artifacts:
     reports:
       junit:
