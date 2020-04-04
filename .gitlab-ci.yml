@@ -1,8 +1,5 @@
 image: openjdk:8-jdk
 
-include:
-  - template: Code-Quality.gitlab-ci.yml
-
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
@@ -108,5 +105,3 @@ Test Mars:
   allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/mars
-
-
