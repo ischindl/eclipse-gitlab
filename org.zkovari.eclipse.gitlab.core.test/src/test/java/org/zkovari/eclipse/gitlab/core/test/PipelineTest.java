@@ -65,42 +65,6 @@ public class PipelineTest {
     }
 
     @Test
-    public void testPropertyChangeForId() {
-        pipeline.addPropertyChangeListener(mockListener);
-        pipeline.setId("oldValue");
-        pipeline.setId("newValue");
-
-        verify(mockListener, times(2)).propertyChange(argumentCaptor.capture());
-        verifyPropertyChangeEvent(argumentCaptor.getAllValues().get(0), "id", null, "oldValue");
-        verifyPropertyChangeEvent(argumentCaptor.getAllValues().get(1), "id", "oldValue", "newValue");
-        assertEquals("newValue", pipeline.getId());
-    }
-
-    @Test
-    public void testPropertyChangeForWebUrl() {
-        pipeline.addPropertyChangeListener(mockListener);
-        pipeline.setWebUrl("oldValue");
-        pipeline.setWebUrl("newValue");
-
-        verify(mockListener, times(2)).propertyChange(argumentCaptor.capture());
-        verifyPropertyChangeEvent(argumentCaptor.getAllValues().get(0), "webUrl", null, "oldValue");
-        verifyPropertyChangeEvent(argumentCaptor.getAllValues().get(1), "webUrl", "oldValue", "newValue");
-        assertEquals("newValue", pipeline.getWebUrl());
-    }
-
-    @Test
-    public void testPropertyChangeForRef() {
-        pipeline.addPropertyChangeListener(mockListener);
-        pipeline.setRef("oldValue");
-        pipeline.setRef("newValue");
-
-        verify(mockListener, times(2)).propertyChange(argumentCaptor.capture());
-        verifyPropertyChangeEvent(argumentCaptor.getAllValues().get(0), "ref", null, "oldValue");
-        verifyPropertyChangeEvent(argumentCaptor.getAllValues().get(1), "ref", "oldValue", "newValue");
-        assertEquals("newValue", pipeline.getRef());
-    }
-
-    @Test
     public void testPropertyChangeForSha() {
         pipeline.addPropertyChangeListener(mockListener);
         pipeline.setSha("oldValue");
@@ -115,16 +79,10 @@ public class PipelineTest {
     @Test
     public void testPropertyChangeWithoutListener() {
         pipeline.setStatus("newStatus");
-        pipeline.setId("newId");
-        pipeline.setWebUrl("newWebUrl");
-        pipeline.setRef("newRef");
         pipeline.setSha("newSha");
 
         verifyZeroInteractions(mockListener);
         assertEquals("newStatus", pipeline.getStatus());
-        assertEquals("newId", pipeline.getId());
-        assertEquals("newWebUrl", pipeline.getWebUrl());
-        assertEquals("newRef", pipeline.getRef());
         assertEquals("newSha", pipeline.getSha());
     }
 
@@ -134,16 +92,10 @@ public class PipelineTest {
         pipeline.removePropertyChangeListener(mockListener);
 
         pipeline.setStatus("newStatus");
-        pipeline.setId("newId");
-        pipeline.setWebUrl("newWebUrl");
-        pipeline.setRef("newRef");
         pipeline.setSha("newSha");
 
         verifyZeroInteractions(mockListener);
         assertEquals("newStatus", pipeline.getStatus());
-        assertEquals("newId", pipeline.getId());
-        assertEquals("newWebUrl", pipeline.getWebUrl());
-        assertEquals("newRef", pipeline.getRef());
         assertEquals("newSha", pipeline.getSha());
     }
 

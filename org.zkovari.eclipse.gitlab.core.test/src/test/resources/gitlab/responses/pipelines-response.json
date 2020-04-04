@@ -1,142 +1,81 @@
-[
-  {
-    "id": 74595935,
-    "sha": "3d09c47d3bd06f6cec383e92e9dc0fb34f063368",
-    "ref": "master",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74595935"
-  },
-  {
-    "id": 74587141,
-    "sha": "c09ccb409c1f015c95a65ca6fca32b7100310054",
-    "ref": "master",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74587141"
-  },
-  {
-    "id": 74587076,
-    "sha": "b5c0cd14076d69f6816dc34c10ef65156bde5e73",
-    "ref": "master",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74587076"
-  },
-  {
-    "id": 74552205,
-    "sha": "a7bfca1b0edbcc86cbecf33de49a1acad05c5850",
-    "ref": "master",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74552205"
-  },
-  {
-    "id": 74551836,
-    "sha": "1f16a19d93a5d06c7c3efb2e6caa0bf9338f9a33",
-    "ref": "master",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74551836"
-  },
-  {
-    "id": 74550755,
-    "sha": "7ceb7cc57e1070cbafb538e7334b8f041d396ec5",
-    "ref": "master",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74550755"
-  },
-  {
-    "id": 74550507,
-    "sha": "7f7f966efc0691b9a9ed71931a2fbd71d0ad5354",
-    "ref": "master",
-    "status": "success",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74550507"
-  },
-  {
-    "id": 74549548,
-    "sha": "936c960d3947bfd64bda7b482b35e45dcf523c74",
-    "ref": "master",
-    "status": "skipped",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74549548"
-  },
-  {
-    "id": 74549248,
-    "sha": "45ea5a8002d3ff874c1bc4a920aa2f2ca91d7660",
-    "ref": "master",
-    "status": "success",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74549248"
-  },
-  {
-    "id": 74548688,
-    "sha": "0a2e3a8033b95031144a74c9eedcefdad75ed812",
-    "ref": "feature/code-climate",
-    "status": "success",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74548688"
-  },
-  {
-    "id": 74548610,
-    "sha": "abe426ead9e475183eb4809280995a7b5b81a282",
-    "ref": "feature/code-climate",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74548610"
-  },
-  {
-    "id": 74548579,
-    "sha": "f95446ac604401ce4067b6182310adf16a8b23a4",
-    "ref": "feature/code-climate",
-    "status": "canceled",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74548579"
-  },
-  {
-    "id": 74544828,
-    "sha": "f95446ac604401ce4067b6182310adf16a8b23a4",
-    "ref": "master",
-    "status": "success",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74544828"
-  },
-  {
-    "id": 74544482,
-    "sha": "9c36e7bbcd18e857dc05699d60d76f7070cfda5c",
-    "ref": "master",
-    "status": "success",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74544482"
-  },
-  {
-    "id": 74544286,
-    "sha": "39178cedd2e8bffd3decbcf2a15bf6d22e48b899",
-    "ref": "master",
-    "status": "success",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74544286"
-  },
-  {
-    "id": 74543975,
-    "sha": "3eaafb0b4d3a3b21c870c36b37e32b3c62a33ba1",
-    "ref": "master",
-    "status": "canceled",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74543975"
-  },
-  {
-    "id": 74543814,
-    "sha": "4939e9f300fd454567eacb4101fd10b3a27a6d80",
-    "ref": "master",
-    "status": "failed",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74543814"
-  },
-  {
-    "id": 74542718,
-    "sha": "dcc8f11d96ee4e83ed5dc7e25ebb4cf5df6e6b9f",
-    "ref": "master",
-    "status": "canceled",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74542718"
-  },
-  {
-    "id": 74542703,
-    "sha": "599959e063329a26094a33dfdd3577656bf8e5b1",
-    "ref": "master",
-    "status": "canceled",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74542703"
-  },
-  {
-    "id": 74541456,
-    "sha": "0cfdb1ee151f9fff6d065c9c03a0975b4f6cd8af",
-    "ref": "master",
-    "status": "success",
-    "web_url": "https://gitlab.com/zkovari/eclipse-gitlab/pipelines/74541456"
+{
+  "data": {
+    "project": {
+      "name": "eclipse-gitlab",
+      "pipelines": {
+        "nodes": [
+          {
+            "coverage": 41,
+            "sha": "a727a4dc9db77e210f93d0a49b387493516f1f00",
+            "detailedStatus": {
+              "group": "success-with-warnings",
+              "detailsPath": "/zkovari/eclipse-gitlab/pipelines/131909285"
+            },
+            "status": "SUCCESS",
+            "updatedAt": "2020-04-01T16:49:32Z",
+            "duration": 341,
+            "userPermissions": {
+              "updatePipeline": true
+            }
+          },
+          {
+            "coverage": 42,
+            "sha": "6bda8348d08ac54a478d1e789847ce1f0d5cb52f",
+            "detailedStatus": {
+              "group": "success-with-warnings",
+              "detailsPath": "/zkovari/eclipse-gitlab/pipelines/130474746"
+            },
+            "status": "SUCCESS",
+            "updatedAt": "2020-03-27T18:10:26Z",
+            "duration": 348,
+            "userPermissions": {
+              "updatePipeline": true
+            }
+          },
+          {
+            "coverage": 42,
+            "sha": "f8e74b349262438d893b15c99d726bbd4a690117",
+            "detailedStatus": {
+              "group": "success-with-warnings",
+              "detailsPath": "/zkovari/eclipse-gitlab/pipelines/130468947"
+            },
+            "status": "SUCCESS",
+            "updatedAt": "2020-03-27T17:47:34Z",
+            "duration": 357,
+            "userPermissions": {
+              "updatePipeline": true
+            }
+          },
+          {
+            "coverage": 41,
+            "sha": "00e91c931fc8023733d067af88c75bcf51784dc2",
+            "detailedStatus": {
+              "group": "success-with-warnings",
+              "detailsPath": "/zkovari/eclipse-gitlab/pipelines/130145871"
+            },
+            "status": "SUCCESS",
+            "updatedAt": "2020-03-26T19:48:56Z",
+            "duration": 355,
+            "userPermissions": {
+              "updatePipeline": true
+            }
+          },
+          {
+            "coverage": 41,
+            "sha": "18e00f7809ed408c826d0c575b088caea0b61854",
+            "detailedStatus": {
+              "group": "success-with-warnings",
+              "detailsPath": "/zkovari/eclipse-gitlab/pipelines/130138984"
+            },
+            "status": "SUCCESS",
+            "updatedAt": "2020-03-26T19:20:29Z",
+            "duration": 354,
+            "userPermissions": {
+              "updatePipeline": true
+            }
+          }
+        ]
+      }
+    }
   }
-]
+}

@@ -24,16 +24,52 @@ import com.google.gson.annotations.SerializedName;
 
 public class Pipeline {
 
-    private String id;
-    @SerializedName("web_url")
-    private String webUrl;
+    @SerializedName("status")
     private String status;
-    private String ref;
+
+    @SerializedName("detailedStatus")
+    private PipelineDetailedStatus detailedStatus;
+
+    @SerializedName("sha")
     private String sha;
+
+    @SerializedName("updatedAt")
+    private String updatedAt;
+
+    @SerializedName("coverage")
+    private double coverage;
+
+    @SerializedName("duration")
+    private int duration;
+
     private TestReport testReport;
     private List<Job> jobs;
 
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+    public double getCoverage() {
+        return coverage;
+    }
+
+    public void setCoverage(double coverage) {
+        this.coverage = coverage;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
     public Pipeline() {
         jobs = new ArrayList<>();
@@ -51,22 +87,6 @@ public class Pipeline {
         changeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getWebUrl() {
-        return webUrl;
-    }
-
-    public void setWebUrl(String webUrl) {
-        firePropertyChange("webUrl", this.webUrl, this.webUrl = webUrl);
-    }
-
-    public void setId(String id) {
-        firePropertyChange("id", this.id, this.id = id);
-    }
-
     public String getStatus() {
         return status;
     }
@@ -75,12 +95,12 @@ public class Pipeline {
         firePropertyChange("status", this.status, this.status = status);
     }
 
-    public String getRef() {
-        return ref;
+    public PipelineDetailedStatus getDetailedStatus() {
+        return detailedStatus;
     }
 
-    public void setRef(String ref) {
-        firePropertyChange("ref", this.ref, this.ref = ref);
+    public void setDetailedStatus(PipelineDetailedStatus detailedStatus) {
+        this.detailedStatus = detailedStatus;
     }
 
     public String getSha() {
@@ -105,8 +125,8 @@ public class Pipeline {
 
     @Override
     public String toString() {
-        return "Pipeline [id=" + id + ", webUrl=" + webUrl + ", status=" + status + ", ref=" + ref + ", sha=" + sha
-                + "]";
+        return "Pipeline [status=" + status + ", detailedStatus=" + detailedStatus + ", sha=" + sha + ", updatedAt="
+                + updatedAt + ", coverage=" + coverage + ", duration=" + duration + "]";
     }
 
 }

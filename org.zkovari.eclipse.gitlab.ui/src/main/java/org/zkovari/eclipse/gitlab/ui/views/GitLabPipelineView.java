@@ -38,9 +38,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -49,12 +49,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TableColumn;
@@ -248,68 +245,17 @@ public class GitLabPipelineView extends ViewPart {
     }
 
     private void createColumns() {
-        String[] titles = { "", "", "", "" };
-        int[] bounds = { 40, 40, 100, 40 };
+        int minSize = 40;
 
-        TableViewerColumn statusColumnViewer = createTableViewerColumn(titles[0], bounds[0]);
-        statusColumnViewer.setLabelProvider(new OwnerDrawLabelProvider() {
+        TableViewerColumn statusColumnViewer = createTableViewerColumn("Status", 60);
+        statusColumnViewer.setLabelProvider(new PipelineStatusImageLabelProvider());
 
-            private Image image;
-
-            @Override
-            protected void measure(Event event, Object element) {
-                Pipeline pipeline = (Pipeline) element;
-                switch (pipeline.getStatus()) {
-                case "running":
-                    image = Activator
-                            .getImageDescriptor(
-                                    "platform:/plugin/org.eclipse.mylyn.commons.ui/icons/eview16/progress/1.png")
-                            .createImage();
-                    break;
-                case "pending":
-                    image = Activator
-                            .getImageDescriptor(
-                                    "platform:/plugin/org.eclipse.team.ui/icons/full/ovr/waiting_ovr@2x.png")
-                            .createImage();
-                    break;
-                case "success":
-                    image = Activator
-                            .getImageDescriptor(
-                                    "platform:/plugin/org.eclipse.platform.doc.user/images/image92-check.png")
-                            .createImage();
-                    break;
-                case "failed":
-                    image = Activator
-                            .getImageDescriptor("platform:/plugin/org.eclipse.jface/icons/full/message_error.png")
-                            .createImage();
-                    break;
-                case "canceled":
-                    image = Activator
-                            .getImageDescriptor("platform:/plugin/org.eclipse.ui.console/icons/full/elcl16/rem_co.png")
-                            .createImage();
-                    break;
-                case "skipped":
-                default:
-                    image = Activator
-                            .getImageDescriptor(
-                                    "platform:/plugin/org.eclipse.ui.ide/icons/full/obj16/incomplete_tsk.png")
-                            .createImage();
-                }
-            }
-
-            @Override
-            protected void paint(Event event, Object element) {
-                Rectangle bounds = event.getBounds();
-                event.gc.drawImage(image, bounds.x + 5, bounds.y + 5);
-            }
-
-        });
-
-        TableViewerColumn webRefColumnViewer = createTableViewerColumn(titles[1], bounds[1]);
+        TableViewerColumn webRefColumnViewer = createTableViewerColumn("URL", minSize);
         ColumnImageMouseListener columnMouseListener = new ColumnImageMouseListener(webRefColumnViewer, 1, cell -> {
             try {
+                Pipeline pipeline = (Pipeline) cell.getElement();
                 PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser()
-                        .openURL(new URL(((Pipeline) cell.getElement()).getWebUrl()));
+                        .openURL(new URL("https://gitlab.com" + pipeline.getDetailedStatus().getDetailsPath()));
             } catch (PartInitException | MalformedURLException ex) {
                 Activator.logError(ex.getMessage());
             }
@@ -318,15 +264,15 @@ public class GitLabPipelineView extends ViewPart {
         webRefColumnViewer.setLabelProvider(new CellImageDrawLabelProvider(
                 "platform:/plugin/org.eclipse.ui.browser/icons/obj16/external_browser.png"));
 
-        TableViewerColumn refColumnViewer = createTableViewerColumn(titles[2], bounds[2]);
+        TableViewerColumn refColumnViewer = createTableViewerColumn("Commit", 100);
         refColumnViewer.setLabelProvider(new StyledCellLabelProvider() {
 
             @Override
             public void update(ViewerCell cell) {
                 Pipeline pipeline = (Pipeline) cell.getElement();
-                cell.setText(pipeline.getRef());
+                cell.setText(pipeline.getSha());
 
-                StyleRange refStyledRange = new StyleRange(0, pipeline.getRef().length(),
+                StyleRange refStyledRange = new StyleRange(0, pipeline.getSha().length(),
                         Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE), null);
                 refStyledRange.underline = true;
                 StyleRange[] range = { refStyledRange };
@@ -337,16 +283,48 @@ public class GitLabPipelineView extends ViewPart {
 
         });
 
-        TableViewerColumn artifactsColumnViewer = createTableViewerColumn(titles[3], bounds[3]);
-        columnMouseListener = new ColumnImageMouseListener(artifactsColumnViewer, 3, cell -> {
+        TableViewerColumn durationColumnViewer = createTableViewerColumn("Duration", 65);
+        durationColumnViewer.setLabelProvider(new ColumnLabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+                Pipeline pipeline = (Pipeline) element;
+                return Integer.toString(pipeline.getDuration());
+            }
+
+        });
+
+        TableViewerColumn createdAtColumnViewer = createTableViewerColumn("Last updated", 100);
+        createdAtColumnViewer.setLabelProvider(new ColumnLabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+                Pipeline pipeline = (Pipeline) element;
+                return pipeline.getUpdatedAt();
+            }
+
+        });
+
+        TableViewerColumn coverageColumnViewer = createTableViewerColumn("Coverage", 80);
+        coverageColumnViewer.setLabelProvider(new ColumnLabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+                Pipeline pipeline = (Pipeline) element;
+                return Double.toString(pipeline.getCoverage());
+            }
+
+        });
+
+        TableViewerColumn artifactsColumnViewer = createTableViewerColumn("", minSize);
+        columnMouseListener = new ColumnImageMouseListener(artifactsColumnViewer, 6, cell -> {
             Pipeline pipeline = (Pipeline) cell.getElement();
             Optional<String> token = GitLabUtils.getToken();
 
             GitLabClient gitLabClient = new GitLabClient();
             TestReport testReport;
             try {
-                testReport = gitLabClient.getPipelineTestReports("https://gitlab.com", token.get(), gitLabProject,
-                        pipeline);
+                testReport = gitLabClient.getPipelineTestReports("https://gitlab.com", token.get(), pipeline);
                 pipeline.setTestReport(testReport);
             } catch (IOException ex) {
                 Activator.logError(ex.getMessage());

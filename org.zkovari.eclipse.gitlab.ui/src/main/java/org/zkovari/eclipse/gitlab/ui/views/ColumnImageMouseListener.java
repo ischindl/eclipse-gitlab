@@ -28,6 +28,7 @@ import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Control;
 import org.zkovari.eclipse.gitlab.ui.Activator;
 
 public class ColumnImageMouseListener implements MouseListener, MouseMoveListener, MouseTrackListener {
@@ -106,7 +107,10 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
     }
 
     private void setCursor(Cursor cursor) {
-        Activator.getDefault().getWorkbench().getDisplay().getCursorControl().getShell().setCursor(cursor);
+        Control cursorControle = Activator.getDefault().getWorkbench().getDisplay().getCursorControl();
+        if (cursorControle != null) {
+            cursorControle.getShell().setCursor(cursor);
+        }
     }
 
 }

@@ -24,10 +24,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClients;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 public class GitLabClient {
@@ -53,11 +59,22 @@ public class GitLabClient {
     }
 
     public List<Pipeline> getPipelines(String serverUrl, String token, GitLabProject project) throws IOException {
-        HttpGet httpGet = new HttpGet(serverUrl + "/api/v4/projects/" + project.getId() + "/pipelines");
-        httpGet.addHeader(PRIVATE_TOKEN_HEADER, token);
+        HttpPost httpPost = new HttpPost(serverUrl + "/api/graphql");
+        httpPost.addHeader("Authorization", "Bearer " + token);
+        httpPost.addHeader("Content-Type", "application/json");
+        StringEntity requestEntity = new StringEntity(String.format(
+                "{\"query\": \"query {project(fullPath: \\\"%s\\\") {pipelines(first: 5){"
+                        + "nodes{coverage sha updatedAt duration status detailedStatus{group detailsPath} userPermissions{updatePipeline}}}}}\"}",
+                project.getFullPath()), ContentType.APPLICATION_JSON);
 
-        HttpResponse response = client.execute(httpGet);
-        return gson.fromJson(responseHandler.handleResponse(response), new TypeToken<List<Pipeline>>() {
+        httpPost.setEntity(requestEntity);
+
+        HttpResponse response = client.execute(httpPost);
+        String responseJsonStr = responseHandler.handleResponse(response);
+        JsonObject jsonObject = new JsonParser().parse(responseJsonStr).getAsJsonObject();
+        JsonArray pipelinesJsonArray = jsonObject.getAsJsonObject("data").getAsJsonObject("project")
+                .getAsJsonObject("pipelines").getAsJsonArray("nodes");
+        return gson.fromJson(pipelinesJsonArray.toString(), new TypeToken<List<Pipeline>>() {
         }.getType());
     }
 
@@ -72,8 +89,9 @@ public class GitLabClient {
 
     public List<Job> getPipelineJobs(String serverUrl, String token, Pipeline pipeline, GitLabProject project)
             throws IOException {
-        HttpGet httpGet = new HttpGet(
-                serverUrl + "/api/v4/projects/" + project.getId() + "/pipelines/" + pipeline.getId() + "/jobs");
+        HttpGet httpGet = new HttpGet(serverUrl + "/api/v4/projects/"
+                + URLEncoder.encode(pipeline.getDetailedStatus().getDetailsPath(), StandardCharsets.UTF_8.toString())
+                + "/jobs");
         httpGet.addHeader(PRIVATE_TOKEN_HEADER, token);
 
         HttpResponse response = client.execute(httpGet);
@@ -81,16 +99,13 @@ public class GitLabClient {
         }.getType());
     }
 
-    public TestReport getPipelineTestReports(String serverUrl, String token, GitLabProject project, Pipeline pipeline)
-            throws IOException {
-        HttpGet httpGet = new HttpGet(
-                serverUrl + "/" + project.getFullPath() + "/pipelines/" + pipeline.getId() + "/test_report.json");
+    public TestReport getPipelineTestReports(String serverUrl, String token, Pipeline pipeline) throws IOException {
+        HttpGet httpGet = new HttpGet(serverUrl + pipeline.getDetailedStatus().getDetailsPath() + "/test_report.json");
 
         httpGet.addHeader(PRIVATE_TOKEN_HEADER, token);
         HttpResponse response = client.execute(httpGet);
 
         return gson.fromJson(responseHandler.handleResponse(response), TestReport.class);
-
     }
 
 }
