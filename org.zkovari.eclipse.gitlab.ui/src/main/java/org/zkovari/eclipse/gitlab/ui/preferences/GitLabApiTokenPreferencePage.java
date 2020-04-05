@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Zsolt Kovari
+ * Copyright 2019-2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -30,34 +30,34 @@ import org.zkovari.eclipse.gitlab.ui.dialogs.SecureTokenInputDialog;
 
 public class GitLabApiTokenPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-	public GitLabApiTokenPreferencePage() {
-		setPreferenceStore(GitLabUIPlugin.getDefault().getPreferenceStore());
-		setDescription("Store GitLab API Token in secure storage:");
-	}
+    public GitLabApiTokenPreferencePage() {
+        setPreferenceStore(GitLabUIPlugin.getDefault().getPreferenceStore());
+        setDescription("Store GitLab API Token in secure storage");
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		composite.setLayout(layout);
+    @Override
+    protected Control createContents(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        composite.setLayout(layout);
 
-		Button button = new Button(composite, SWT.PUSH);
-		button.setText("Specify API token");
+        Button button = new Button(composite, SWT.PUSH);
+        button.setText("Specify API token");
 
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				SecureTokenInputDialog dialog = new SecureTokenInputDialog(getShell());
-				dialog.create();
-				dialog.open();
-			}
-		});
-		return button;
-	}
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                SecureTokenInputDialog dialog = new SecureTokenInputDialog(getShell());
+                dialog.create();
+                dialog.open();
+            }
+        });
+        return button;
+    }
 
-	@Override
-	public void init(IWorkbench workbench) {
-		// empty
-	}
+    @Override
+    public void init(IWorkbench workbench) {
+        // empty
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Zsolt Kovari
+ * Copyright 2019-2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -25,9 +25,9 @@ import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-	public void initializeDefaultPreferences() {
-		IPreferenceStore store = GitLabUIPlugin.getDefault().getPreferenceStore();
-		store.setDefault(PreferenceConstants.P_GITLAB_SERVER, "https://gitlab.com");
-	}
+    public void initializeDefaultPreferences() {
+        IPreferenceStore store = GitLabUIPlugin.getDefault().getPreferenceStore();
+        store.setDefault(PreferenceConstants.P_GITLAB_SERVER, "https://gitlab.com");
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Zsolt Kovari
+ * Copyright 2019-2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -24,26 +24,26 @@ import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 public class GitLabPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public GitLabPreferencePage() {
-		super(GRID);
-		setPreferenceStore(GitLabUIPlugin.getDefault().getPreferenceStore());
-		setDescription("General GitLab settings:");
-	}
+    public GitLabPreferencePage() {
+        super(GRID);
+        setPreferenceStore(GitLabUIPlugin.getDefault().getPreferenceStore());
+        setDescription("General GitLab settings");
+    }
 
-	/**
-	 * Creates the field editors. Field editors are abstractions of the common GUI
-	 * blocks needed to manipulate various types of preferences. Each field editor
-	 * knows how to save and restore itself.
-	 */
-	@Override
-	protected void createFieldEditors() {
-		addField(new StringFieldEditor(PreferenceConstants.P_GITLAB_SERVER, "GitLab server:", getFieldEditorParent()));
+    /**
+     * Creates the field editors. Field editors are abstractions of the common GUI
+     * blocks needed to manipulate various types of preferences. Each field editor
+     * knows how to save and restore itself.
+     */
+    @Override
+    protected void createFieldEditors() {
+        addField(new StringFieldEditor(PreferenceConstants.P_GITLAB_SERVER, "GitLab server:", getFieldEditorParent()));
 
-	}
+    }
 
-	@Override
-	public void init(IWorkbench workbench) {
-		// empty
-	}
+    @Override
+    public void init(IWorkbench workbench) {
+        // empty
+    }
 
 }
