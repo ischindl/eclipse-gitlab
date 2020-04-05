@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.egit.core.project.RepositoryMapping;
 import org.eclipse.jgit.api.Git;
 
+@SuppressWarnings("restriction")
 public class ProjectMapping {
 
     private final Map<IPath, GitLabProject> projectMapping;
