@@ -46,6 +46,7 @@ import org.zkovari.eclipse.gitlab.core.internal.TestGitLabClient;
 public class ProjectMappingTest extends MockHttpClientTestBase {
 
     private static final String TEST_TOKEN = "testtoken";
+    private static final String GITLAB_SERVER = "http://gitlab.com";
 
     private ProjectMapping mapping;
 
@@ -94,7 +95,7 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
     public void testGetOrCreateGitLabProject_whenPathIsNotAGitRepository() throws IOException {
         thrown.expect(IOException.class);
         thrown.expectMessage("Given path is not a Git repository: " + repoPath);
-        mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN);
+        mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN, GITLAB_SERVER);
     }
 
     @Test
@@ -102,7 +103,7 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
         Git.init().setDirectory(repoPath.toFile()).call();
         thrown.expect(IOException.class);
         thrown.expectMessage("Git remote url could not have been retrieved from local repository: " + repoPath);
-        mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN);
+        mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN, GITLAB_SERVER);
     }
 
     @Test
@@ -113,12 +114,12 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
 
         String projectResponse = loadResourceAsString("gitlab/responses/project-response.json");
         mockHttpGet(200, projectResponse);
-        GitLabProject project = mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN);
+        GitLabProject project = mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN, GITLAB_SERVER);
 
         assertGitLabProject(project);
         verify(mockHttpClient).execute(ArgumentMatchers.any());
 
-        GitLabProject secondProject = mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN);
+        GitLabProject secondProject = mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN, GITLAB_SERVER);
         verifyNoMoreInteractions(mockHttpClient);
         assertEquals(project, secondProject);
     }
@@ -134,11 +135,11 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
 
         ExecutorService executorService = Executors.newFixedThreadPool(3);
         Future<GitLabProject> future1 = executorService
-                .submit(() -> mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN));
+                .submit(() -> mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN, GITLAB_SERVER));
         Future<GitLabProject> future2 = executorService
-                .submit(() -> mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN));
+                .submit(() -> mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN, GITLAB_SERVER));
         Future<GitLabProject> future3 = executorService
-                .submit(() -> mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN));
+                .submit(() -> mapping.getOrCreateGitLabProject(repoPath, TEST_TOKEN, GITLAB_SERVER));
         Thread.sleep(250);
         while (!future1.isDone() && !future2.isDone() && !future3.isDone()) {
             Thread.sleep(500);

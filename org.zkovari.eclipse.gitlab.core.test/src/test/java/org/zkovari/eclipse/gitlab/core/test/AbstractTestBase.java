@@ -51,7 +51,7 @@ public abstract class AbstractTestBase {
     }
 
     protected TestGitLabClient assertTestGitLabClient() {
-        GitLabClient gitLabClient = Activator.getInstance().getGitLabClient();
+        GitLabClient gitLabClient = Activator.getDefault().getGitLabClient();
         assertTrue("Expected TestGitLabClient instance instead of " + gitLabClient.getClass().getName()
                 + ". Please make sure you specify the environment variable org.zkovari.eclipse.gitlabServerEnvironment=UNIT_TEST",
                 gitLabClient instanceof TestGitLabClient);

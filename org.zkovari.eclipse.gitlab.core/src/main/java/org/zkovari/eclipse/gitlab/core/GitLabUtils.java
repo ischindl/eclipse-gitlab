@@ -56,17 +56,12 @@ public class GitLabUtils {
 
     public static Optional<String> getToken() {
         try {
-            return Activator.getInstance().getGitLabSecureStore().getToken(SecurePreferencesFactory.getDefault());
+            return Activator.getDefault().getGitLabSecureStore().getToken(SecurePreferencesFactory.getDefault());
         } catch (SecureStoreException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return Optional.empty();
-    }
-
-    public static String getServerUrl() {
-        // TODO Auto-generated method stub
-        return "https://gitlab.com";
     }
 
 }

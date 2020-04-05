@@ -37,6 +37,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -67,6 +68,7 @@ import org.zkovari.eclipse.gitlab.core.Pipeline;
 import org.zkovari.eclipse.gitlab.core.ProjectMapping;
 import org.zkovari.eclipse.gitlab.core.TestReport;
 import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
+import org.zkovari.eclipse.gitlab.ui.preferences.PreferenceConstants;
 
 public class GitLabPipelineView extends ViewPart {
 
@@ -92,7 +94,7 @@ public class GitLabPipelineView extends ViewPart {
 
     public GitLabPipelineView() {
         pipelines = new ArrayList<>();
-        projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getInstance().getProjectMapping();
+        projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getDefault().getProjectMapping();
         testReportDisplayer = new TestReportDisplayer();
     }
 
@@ -124,7 +126,8 @@ public class GitLabPipelineView extends ViewPart {
                     try {
                         Optional<String> token = GitLabUtils.getToken();
                         // TODO handle if token is missing
-                        gitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get());
+                        gitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get(),
+                                getGitLabServer());
                         fetchPipelines();
                     } catch (IOException ex) {
                         gitLabProject = null;
@@ -255,7 +258,7 @@ public class GitLabPipelineView extends ViewPart {
             try {
                 Pipeline pipeline = (Pipeline) cell.getElement();
                 PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser()
-                        .openURL(new URL("https://gitlab.com" + pipeline.getDetailedStatus().getDetailsPath()));
+                        .openURL(new URL(getGitLabServer() + pipeline.getDetailedStatus().getDetailsPath()));
             } catch (PartInitException | MalformedURLException ex) {
                 GitLabUIPlugin.logError(ex.getMessage());
             }
@@ -324,7 +327,7 @@ public class GitLabPipelineView extends ViewPart {
             GitLabClient gitLabClient = new GitLabClient();
             TestReport testReport;
             try {
-                testReport = gitLabClient.getPipelineTestReports("https://gitlab.com", token.get(), pipeline);
+                testReport = gitLabClient.getPipelineTestReports(getGitLabServer(), token.get(), pipeline);
                 pipeline.setTestReport(testReport);
             } catch (IOException ex) {
                 GitLabUIPlugin.logError(ex.getMessage());
@@ -336,6 +339,11 @@ public class GitLabPipelineView extends ViewPart {
         addMouseListener(artifactsColumnViewer, columnMouseListener);
         artifactsColumnViewer.setLabelProvider(
                 new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.jdt.junit/icons/full/eview16/junit.gif"));
+    }
+
+    private String getGitLabServer() {
+        IPreferenceStore store = GitLabUIPlugin.getDefault().getPreferenceStore();
+        return store.getString(PreferenceConstants.P_GITLAB_SERVER);
     }
 
     private void addMouseListener(TableViewerColumn columnViewer, ColumnImageMouseListener mouseListener) {
@@ -385,7 +393,7 @@ public class GitLabPipelineView extends ViewPart {
         try {
             GitLabClient gitLabClient = new GitLabClient();
             // TODO handle if token is missing
-            List<Pipeline> newPipelines = gitLabClient.getPipelines("https://gitlab.com", token.get(), gitLabProject);
+            List<Pipeline> newPipelines = gitLabClient.getPipelines(getGitLabServer(), token.get(), gitLabProject);
             gitLabProject.getPipelines().clear();
             gitLabProject.getPipelines().addAll(newPipelines);
 

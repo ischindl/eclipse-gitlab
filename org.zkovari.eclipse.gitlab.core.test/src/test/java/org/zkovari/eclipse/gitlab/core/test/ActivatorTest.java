@@ -27,7 +27,7 @@ public class ActivatorTest {
 
     @Test
     public void testGetInstances() {
-        Activator instance = Activator.getInstance();
+        Activator instance = Activator.getDefault();
         assertNotNull(instance);
 
         GitLabClient gitLabClient = instance.getGitLabClient();

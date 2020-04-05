@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Zsolt Kovari
+ * Copyright 2019-2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -47,7 +47,7 @@ public class ProjectMapping {
         return projectMapping.get(path);
     }
 
-    public GitLabProject getOrCreateGitLabProject(IPath path, String token) throws IOException {
+    public GitLabProject getOrCreateGitLabProject(IPath path, String token, String serverUrl) throws IOException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(token);
         if (projectMapping.containsKey(path)) {
@@ -73,8 +73,8 @@ public class ProjectMapping {
 
             String projectPath = GitLabUtils.getProjectPath(url);
 
-            GitLabClient gitLabClient = Activator.getInstance().getGitLabClient();
-            GitLabProject gitLabProject = gitLabClient.getProject(GitLabUtils.getServerUrl(), token, projectPath);
+            GitLabClient gitLabClient = Activator.getDefault().getGitLabClient();
+            GitLabProject gitLabProject = gitLabClient.getProject(serverUrl, token, projectPath);
             projectMapping.put(path, gitLabProject);
 
             return gitLabProject;

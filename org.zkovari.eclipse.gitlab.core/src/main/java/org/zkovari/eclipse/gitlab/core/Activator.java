@@ -40,7 +40,7 @@ public class Activator implements BundleActivator {
     /**
      * @return the singleton {@link Activator}
      */
-    public static Activator getInstance() {
+    public static Activator getDefault() {
         return plugin;
     }
 
