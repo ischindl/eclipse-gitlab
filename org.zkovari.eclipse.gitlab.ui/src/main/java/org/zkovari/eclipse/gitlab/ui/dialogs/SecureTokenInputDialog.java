@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Zsolt Kovari
+ * Copyright 2019-2020 Zsolt Kovari
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -31,55 +31,54 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.zkovari.eclipse.gitlab.core.security.GitLabSecureStore;
 import org.zkovari.eclipse.gitlab.core.security.SecureStoreException;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 public class SecureTokenInputDialog extends TitleAreaDialog {
 
-	public SecureTokenInputDialog(Shell parentShell) {
-		super(parentShell);
-	}
+    public SecureTokenInputDialog(Shell parentShell) {
+        super(parentShell);
+    }
 
-	@Override
-	public void create() {
-		super.create();
-		setTitle("Please specify your GitLab API token");
-		setMessage("Your token will be encrypted and saved into secure storage", IMessageProvider.INFORMATION);
-	}
+    @Override
+    public void create() {
+        super.create();
+        setTitle("Please specify your GitLab API token");
+        setMessage("Your token will be encrypted and saved into secure storage", IMessageProvider.INFORMATION);
+    }
 
-	@Override
-	protected boolean isResizable() {
-		return true;
-	}
+    @Override
+    protected boolean isResizable() {
+        return true;
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite container = (Composite) super.createDialogArea(parent);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite container = (Composite) super.createDialogArea(parent);
 
-		Text passwordField = new Text(container, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
-		passwordField.setEchoChar('*');
+        Text passwordField = new Text(container, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
+        passwordField.setEchoChar('*');
 
-		Button button = new Button(container, SWT.PUSH);
-		button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		button.setText("Store in secure storage");
+        Button button = new Button(container, SWT.PUSH);
+        button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        button.setText("Store in secure storage");
 
-		Text message = new Text(container, SWT.READ_ONLY);
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ISecurePreferences preferences = SecurePreferencesFactory.getDefault();
+                try {
+                    new GitLabSecureStore().storeToken(preferences, passwordField.getText());
+                } catch (SecureStoreException ex) {
+                    GitLabUIPlugin.showError(ex.getMessage());
+                }
+            }
+        });
 
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ISecurePreferences preferences = SecurePreferencesFactory.getDefault();
-				try {
-					new GitLabSecureStore().storeToken(preferences, passwordField.getText());
-				} catch (SecureStoreException ex) {
-					message.setText(ex.getMessage());
-				}
-			}
-		});
+        return container;
+    }
 
-		return container;
-	}
-
-	@Override
-	protected Point getInitialSize() {
-		return new Point(450, 300);
-	}
+    @Override
+    protected Point getInitialSize() {
+        return new Point(450, 300);
+    }
 }
