@@ -99,13 +99,13 @@ Test Oxygen:
   variables:
     REPO_URL: http://download.eclipse.org/releases/oxygen
 
-Test Neon:
+Unit Test Neon:
   extends: .unit test job template
   allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/neon
 
-Test Mars:
+Unit Test Mars:
   extends: .unit test job template
   allow_failure: true
   variables:
