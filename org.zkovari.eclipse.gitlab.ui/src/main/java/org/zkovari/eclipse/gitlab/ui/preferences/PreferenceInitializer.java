@@ -17,6 +17,7 @@ package org.zkovari.eclipse.gitlab.ui.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.zkovari.eclipse.gitlab.core.PreferenceConstants;
 import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 /**
