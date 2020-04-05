@@ -64,6 +64,7 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
             Rectangle imageRect = new Rectangle(cellBounds.x + PADDING_X, cellBounds.y + PADDING_Y, 16, 16);
             if (imageRect.contains(point)) {
                 action.run(cell);
+                setCursor(CURSOR_ARROW);
             }
         }
 
