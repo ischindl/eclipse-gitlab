@@ -87,7 +87,7 @@ public class TestCase {
 
     @XmlElement(name = "failure")
     public String getStacktrace() {
-        if ("failed".equals(status) && stacktrace == null) {
+        if (("failed".equals(status) || "error".equals(status)) && stacktrace == null) {
             return output;
         }
         return stacktrace;
