@@ -1,7 +1,6 @@
 {
   "data": {
     "project": {
-      "name": "eclipse-gitlab",
       "pipelines": {
         "nodes": [
           {

@@ -42,17 +42,19 @@ public class GitLabClientTest extends MockHttpClientTestBase {
     @Test
     public void testGetPipelines() throws IOException {
         String pipelinesResponse = loadResourceAsString("gitlab/responses/pipelines-response.json");
-        mockHttpGet(200, pipelinesResponse);
+        mockHttpPost(200, pipelinesResponse);
 
         List<Pipeline> pipelines = client.getPipelines("https://non-existing", "", new GitLabProject());
 
         assertNotNull("Parsed pipelines list is null", pipelines);
         assertFalse("Parsed pipelines list is empty", pipelines.isEmpty());
-        assertEquals("Parsed pipelines list's size", 20, pipelines.size());
+        assertEquals("Parsed pipelines list's size", 5, pipelines.size());
 
         Pipeline firstPipeline = pipelines.get(0);
-        assertEquals("failed", firstPipeline.getStatus());
-        assertEquals("3d09c47d3bd06f6cec383e92e9dc0fb34f063368", firstPipeline.getSha());
+        assertEquals("SUCCESS", firstPipeline.getStatus());
+        assertEquals(41.0, firstPipeline.getCoverage(), 0.0);
+        assertEquals(341, firstPipeline.getDuration());
+        assertEquals("a727a4dc9db77e210f93d0a49b387493516f1f00", firstPipeline.getSha());
     }
 
     @Test

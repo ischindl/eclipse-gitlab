@@ -25,6 +25,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.junit.Before;
 import org.mockito.ArgumentMatchers;
@@ -45,6 +46,13 @@ public class MockHttpClientTestBase extends AbstractTestBase {
 
     protected void mockHttpGet(int statusCode, String responseBody) throws IOException, ClientProtocolException {
         when(mockHttpClient.execute(ArgumentMatchers.any(HttpGet.class))).thenReturn(response);
+        when(statusline.getStatusCode()).thenReturn(statusCode);
+        when(response.getStatusLine()).thenReturn(statusline);
+        when(response.getEntity()).thenReturn(new InputStreamEntity(new ByteArrayInputStream(responseBody.getBytes())));
+    }
+
+    protected void mockHttpPost(int statusCode, String responseBody) throws IOException, ClientProtocolException {
+        when(mockHttpClient.execute(ArgumentMatchers.any(HttpPost.class))).thenReturn(response);
         when(statusline.getStatusCode()).thenReturn(statusCode);
         when(response.getStatusLine()).thenReturn(statusline);
         when(response.getEntity()).thenReturn(new InputStreamEntity(new ByteArrayInputStream(responseBody.getBytes())));
