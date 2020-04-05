@@ -68,6 +68,7 @@ import org.zkovari.eclipse.gitlab.core.Pipeline;
 import org.zkovari.eclipse.gitlab.core.ProjectMapping;
 import org.zkovari.eclipse.gitlab.core.TestReport;
 import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
+import org.zkovari.eclipse.gitlab.ui.dialogs.SecureTokenInputDialog;
 import org.zkovari.eclipse.gitlab.ui.preferences.PreferenceConstants;
 
 public class GitLabPipelineView extends ViewPart {
@@ -125,13 +126,20 @@ public class GitLabPipelineView extends ViewPart {
                 Job job = Job.create("Update table", (ICoreRunnable) monitor -> {
                     try {
                         Optional<String> token = GitLabUtils.getToken();
-                        // TODO handle if token is missing
+                        if (!token.isPresent()) {
+                            sync.asyncExec(() -> {
+                                SecureTokenInputDialog dialog = new SecureTokenInputDialog(composite.getShell());
+                                dialog.create();
+                                dialog.open();
+                            });
+                            return;
+                        }
                         gitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get(),
                                 getGitLabServer());
                         fetchPipelines();
                     } catch (IOException ex) {
                         gitLabProject = null;
-                        GitLabUIPlugin.logError(ex.getMessage());
+                        GitLabUIPlugin.showError(ex.getMessage());
                     }
                     sync.asyncExec(() -> {
                         if (viewer == null || viewer.getTable().isDisposed()) {
@@ -183,13 +191,14 @@ public class GitLabPipelineView extends ViewPart {
             if (project == null) {
                 return;
             }
+
             repositoryPath = projectMapping.findRepositoryPath(project);
             if (repositoryPath == null) {
                 displayProjectStatusAndHideTable("Selected project is not an EGit repository: " + project.getName());
                 return;
             }
 
-            gitLabProject = projectMapping.findProject(repositoryPath);
+            gitLabProject = projectMapping.findGitLabProject(repositoryPath);
             if (gitLabProject == null) {
                 displayProjectStatusAndHideTable("<a>Bind project " + project.getName() + "</a>");
                 return;
@@ -385,14 +394,22 @@ public class GitLabPipelineView extends ViewPart {
     }
 
     private void fetchPipelines() {
-        Optional<String> token = GitLabUtils.getToken();
-
         if (gitLabProject == null) {
             return;
         }
+
+        Optional<String> token = GitLabUtils.getToken();
+        if (!token.isPresent()) {
+            sync.asyncExec(() -> {
+                SecureTokenInputDialog dialog = new SecureTokenInputDialog(composite.getShell());
+                dialog.create();
+                dialog.open();
+            });
+            return;
+        }
+
         try {
             GitLabClient gitLabClient = new GitLabClient();
-            // TODO handle if token is missing
             List<Pipeline> newPipelines = gitLabClient.getPipelines(getGitLabServer(), token.get(), gitLabProject);
             gitLabProject.getPipelines().clear();
             gitLabProject.getPipelines().addAll(newPipelines);
@@ -400,7 +417,7 @@ public class GitLabPipelineView extends ViewPart {
             pipelines.clear();
             pipelines.addAll(newPipelines);
         } catch (IOException ex) {
-            GitLabUIPlugin.logError(ex.getMessage());
+            GitLabUIPlugin.showError(ex.getMessage());
         }
 
     }

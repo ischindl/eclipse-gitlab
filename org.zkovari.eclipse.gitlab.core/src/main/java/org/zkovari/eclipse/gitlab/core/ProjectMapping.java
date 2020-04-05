@@ -28,10 +28,10 @@ import org.eclipse.jgit.api.Git;
 @SuppressWarnings("restriction")
 public class ProjectMapping {
 
-    private final Map<IPath, GitLabProject> projectMapping;
+    private final Map<IPath, GitLabProject> pathToGitLabProjectMapping;
 
     public ProjectMapping() {
-        projectMapping = new HashMap<>();
+        pathToGitLabProjectMapping = new HashMap<>();
     }
 
     public IPath findRepositoryPath(IProject project) {
@@ -43,20 +43,20 @@ public class ProjectMapping {
         return mapping.getGitDirAbsolutePath();
     }
 
-    public GitLabProject findProject(IPath path) {
-        return projectMapping.get(path);
+    public GitLabProject findGitLabProject(IPath path) {
+        return pathToGitLabProjectMapping.get(path);
     }
 
     public GitLabProject getOrCreateGitLabProject(IPath path, String token, String serverUrl) throws IOException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(token);
-        if (projectMapping.containsKey(path)) {
-            return projectMapping.get(path);
+        if (pathToGitLabProjectMapping.containsKey(path)) {
+            return pathToGitLabProjectMapping.get(path);
         }
 
         synchronized (this) {
-            if (projectMapping.containsKey(path)) {
-                return projectMapping.get(path);
+            if (pathToGitLabProjectMapping.containsKey(path)) {
+                return pathToGitLabProjectMapping.get(path);
             }
 
             String url;
@@ -75,11 +75,10 @@ public class ProjectMapping {
 
             GitLabClient gitLabClient = Activator.getDefault().getGitLabClient();
             GitLabProject gitLabProject = gitLabClient.getProject(serverUrl, token, projectPath);
-            projectMapping.put(path, gitLabProject);
+            pathToGitLabProjectMapping.put(path, gitLabProject);
 
             return gitLabProject;
         }
-
     }
 
 }

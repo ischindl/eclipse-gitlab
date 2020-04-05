@@ -85,7 +85,7 @@ public class ProjectMappingTest extends MockHttpClientTestBase {
 
     @Test
     public void testFindProjectIsNull() {
-        GitLabProject project = mapping.findProject(repoPath);
+        GitLabProject project = mapping.findGitLabProject(repoPath);
 
         assertNull(project);
         verifyZeroInteractions(mockHttpClient);
