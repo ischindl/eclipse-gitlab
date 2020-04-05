@@ -34,7 +34,7 @@ import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
 import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
 import org.xml.sax.SAXException;
 import org.zkovari.eclipse.gitlab.core.TestReport;
-import org.zkovari.eclipse.gitlab.ui.Activator;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 @SuppressWarnings("restriction")
 public class TestReportDisplayer {
@@ -48,14 +48,14 @@ public class TestReportDisplayer {
             marshaller = contextObj.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         } catch (JAXBException ex) {
-            Activator.logError(ex.getMessage());
+            GitLabUIPlugin.logError(ex.getMessage());
         }
 
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
         try {
             parser = parserFactory.newSAXParser();
         } catch (ParserConfigurationException | SAXException ex) {
-            Activator.logError(ex.getMessage());
+            GitLabUIPlugin.logError(ex.getMessage());
         }
     }
 
@@ -72,7 +72,7 @@ public class TestReportDisplayer {
             TestRunSession session = handler.getTestRunSession();
             JUnitCorePlugin.getModel().addTestRunSession(session);
         } catch (JAXBException | SAXException | IOException ex) {
-            Activator.logError(ex.getMessage());
+            GitLabUIPlugin.logError(ex.getMessage());
         }
         TestRunnerViewPart view = (TestRunnerViewPart) JUnitPlugin.getActivePage().findView(TestRunnerViewPart.NAME);
         view.showTestResultsView();

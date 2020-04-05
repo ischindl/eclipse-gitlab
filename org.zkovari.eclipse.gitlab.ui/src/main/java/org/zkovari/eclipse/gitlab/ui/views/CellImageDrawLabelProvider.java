@@ -19,7 +19,7 @@ import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
-import org.zkovari.eclipse.gitlab.ui.Activator;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 public class CellImageDrawLabelProvider extends OwnerDrawLabelProvider {
 
@@ -35,7 +35,7 @@ public class CellImageDrawLabelProvider extends OwnerDrawLabelProvider {
 
     @Override
     protected void measure(Event event, Object element) {
-        image = Activator.getImageDescriptor(resourceImagePath).createImage();
+        image = GitLabUIPlugin.getImageDescriptor(resourceImagePath).createImage();
     }
 
     @Override

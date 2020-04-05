@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.zkovari.eclipse.gitlab.core.Pipeline;
-import org.zkovari.eclipse.gitlab.ui.Activator;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 public class PipelineStatusImageLabelProvider extends OwnerDrawLabelProvider {
 
@@ -31,37 +31,37 @@ public class PipelineStatusImageLabelProvider extends OwnerDrawLabelProvider {
         Pipeline pipeline = (Pipeline) element;
         switch (pipeline.getStatus()) {
         case "RUNNING":
-            image = Activator
+            image = GitLabUIPlugin
                     .getImageDescriptor("platform:/plugin/org.eclipse.mylyn.commons.ui/icons/eview16/progress/1.png")
                     .createImage();
             break;
         case "PENDING":
-            image = Activator
+            image = GitLabUIPlugin
                     .getImageDescriptor("platform:/plugin/org.eclipse.team.ui/icons/full/ovr/waiting_ovr@2x.png")
                     .createImage();
             break;
         case "SUCCESS":
             if (pipeline.getDetailedStatus().getGroup().contains("warning")) {
-                image = Activator.getImageDescriptor(
+                image = GitLabUIPlugin.getImageDescriptor(
                         "platform:/plugin/org.eclipse.jface/org/eclipse/jface/dialogs/images/message_warning.png")
                         .createImage();
             } else {
-                image = Activator
+                image = GitLabUIPlugin
                         .getImageDescriptor("platform:/plugin/org.eclipse.platform.doc.user/images/image92-check.png")
                         .createImage();
             }
             break;
         case "FAILED":
-            image = Activator.getImageDescriptor("platform:/plugin/org.eclipse.jface/icons/full/message_error.png")
+            image = GitLabUIPlugin.getImageDescriptor("platform:/plugin/org.eclipse.jface/icons/full/message_error.png")
                     .createImage();
             break;
         case "CANCELED":
-            image = Activator.getImageDescriptor("platform:/plugin/org.eclipse.ui.console/icons/full/elcl16/rem_co.png")
+            image = GitLabUIPlugin.getImageDescriptor("platform:/plugin/org.eclipse.ui.console/icons/full/elcl16/rem_co.png")
                     .createImage();
             break;
         case "SKIPPED":
         default:
-            image = Activator
+            image = GitLabUIPlugin
                     .getImageDescriptor("platform:/plugin/org.eclipse.ui.ide/icons/full/obj16/incomplete_tsk.png")
                     .createImage();
         }

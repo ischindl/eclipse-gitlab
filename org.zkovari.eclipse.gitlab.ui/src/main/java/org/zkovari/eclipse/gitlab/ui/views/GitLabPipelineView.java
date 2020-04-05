@@ -66,7 +66,7 @@ import org.zkovari.eclipse.gitlab.core.GitLabUtils;
 import org.zkovari.eclipse.gitlab.core.Pipeline;
 import org.zkovari.eclipse.gitlab.core.ProjectMapping;
 import org.zkovari.eclipse.gitlab.core.TestReport;
-import org.zkovari.eclipse.gitlab.ui.Activator;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 public class GitLabPipelineView extends ViewPart {
 
@@ -128,7 +128,7 @@ public class GitLabPipelineView extends ViewPart {
                         fetchPipelines();
                     } catch (IOException ex) {
                         gitLabProject = null;
-                        Activator.logError(ex.getMessage());
+                        GitLabUIPlugin.logError(ex.getMessage());
                     }
                     sync.asyncExec(() -> {
                         if (viewer == null || viewer.getTable().isDisposed()) {
@@ -257,7 +257,7 @@ public class GitLabPipelineView extends ViewPart {
                 PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser()
                         .openURL(new URL("https://gitlab.com" + pipeline.getDetailedStatus().getDetailsPath()));
             } catch (PartInitException | MalformedURLException ex) {
-                Activator.logError(ex.getMessage());
+                GitLabUIPlugin.logError(ex.getMessage());
             }
         });
         addMouseListener(webRefColumnViewer, columnMouseListener);
@@ -327,7 +327,7 @@ public class GitLabPipelineView extends ViewPart {
                 testReport = gitLabClient.getPipelineTestReports("https://gitlab.com", token.get(), pipeline);
                 pipeline.setTestReport(testReport);
             } catch (IOException ex) {
-                Activator.logError(ex.getMessage());
+                GitLabUIPlugin.logError(ex.getMessage());
             }
 
             testReportDisplayer.display(pipeline.getTestReport());
@@ -371,7 +371,7 @@ public class GitLabPipelineView extends ViewPart {
         };
         refreshAction.setText("Update");
         refreshAction.setToolTipText("Update pipelines");
-        ImageDescriptor image = Activator
+        ImageDescriptor image = GitLabUIPlugin
                 .getImageDescriptor("platform:/plugin/org.eclipse.ui.views.log/icons/elcl16/refresh.png");
         refreshAction.setImageDescriptor(image);
     }
@@ -392,7 +392,7 @@ public class GitLabPipelineView extends ViewPart {
             pipelines.clear();
             pipelines.addAll(newPipelines);
         } catch (IOException ex) {
-            Activator.logError(ex.getMessage());
+            GitLabUIPlugin.logError(ex.getMessage());
         }
 
     }

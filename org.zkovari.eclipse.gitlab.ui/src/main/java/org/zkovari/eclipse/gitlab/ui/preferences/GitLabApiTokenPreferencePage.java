@@ -25,13 +25,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.zkovari.eclipse.gitlab.ui.Activator;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 import org.zkovari.eclipse.gitlab.ui.dialogs.SecureTokenInputDialog;
 
 public class GitLabApiTokenPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
 	public GitLabApiTokenPreferencePage() {
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		setPreferenceStore(GitLabUIPlugin.getDefault().getPreferenceStore());
 		setDescription("Store GitLab API Token in secure storage:");
 	}
 

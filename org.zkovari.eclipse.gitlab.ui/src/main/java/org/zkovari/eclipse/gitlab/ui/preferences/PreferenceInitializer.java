@@ -17,7 +17,7 @@ package org.zkovari.eclipse.gitlab.ui.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.zkovari.eclipse.gitlab.ui.Activator;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 /**
  * Class used to initialize default preference values.
@@ -25,7 +25,7 @@ import org.zkovari.eclipse.gitlab.ui.Activator;
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = GitLabUIPlugin.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.P_GITLAB_SERVER, "https://gitlab.com");
 	}
 

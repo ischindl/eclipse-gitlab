@@ -29,13 +29,13 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
-import org.zkovari.eclipse.gitlab.ui.Activator;
+import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 public class ColumnImageMouseListener implements MouseListener, MouseMoveListener, MouseTrackListener {
 
-    private static final Cursor CURSOR_ARROW = new Cursor(Activator.getDefault().getWorkbench().getDisplay(),
+    private static final Cursor CURSOR_ARROW = new Cursor(GitLabUIPlugin.getDefault().getWorkbench().getDisplay(),
             SWT.CURSOR_ARROW);
-    private static final Cursor CURSOR_HAND = new Cursor(Activator.getDefault().getWorkbench().getDisplay(),
+    private static final Cursor CURSOR_HAND = new Cursor(GitLabUIPlugin.getDefault().getWorkbench().getDisplay(),
             SWT.CURSOR_HAND);
     private final TableViewerColumn tableViewerColumn;
     private final int columnIndex;
@@ -108,7 +108,7 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
     }
 
     private void setCursor(Cursor cursor) {
-        Control cursorControle = Activator.getDefault().getWorkbench().getDisplay().getCursorControl();
+        Control cursorControle = GitLabUIPlugin.getDefault().getWorkbench().getDisplay().getCursorControl();
         if (cursorControle != null) {
             cursorControle.getShell().setCursor(cursor);
         }

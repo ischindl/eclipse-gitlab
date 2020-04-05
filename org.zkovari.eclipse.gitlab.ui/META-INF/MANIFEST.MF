@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.zkovari.eclipse.gitlab.ui;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Automatic-Module-Name: org.zkovari.eclipse.gitlab.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Activator: org.zkovari.eclipse.gitlab.ui.Activator
+Bundle-Activator: org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
