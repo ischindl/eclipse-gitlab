@@ -36,6 +36,11 @@ cache:
     REPO_URL: http://download.eclipse.org/releases/latest
   allow_failure: true
 
+.unit test job template:
+  extends: .test job template
+  script:
+    - mvn $MAVEN_CLI_OPTS clean verify -PUnitTest
+
 Test and coverage:
   extends: .test job template
   script:
@@ -95,13 +100,13 @@ Test Oxygen:
     REPO_URL: http://download.eclipse.org/releases/oxygen
 
 Test Neon:
-  extends: .test job template
+  extends: .unit test job template
   allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/neon
 
 Test Mars:
-  extends: .test job template
+  extends: .unit test job template
   allow_failure: true
   variables:
     REPO_URL: http://download.eclipse.org/releases/mars
