@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.zkovari.eclipse.gitlab.ui.views;
+package org.zkovari.eclipse.gitlab.ui.views.labels;
 
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.swt.graphics.Image;

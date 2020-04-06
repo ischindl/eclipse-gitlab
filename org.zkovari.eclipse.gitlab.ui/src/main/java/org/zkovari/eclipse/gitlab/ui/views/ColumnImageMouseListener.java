@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.zkovari.eclipse.gitlab.ui.views;
 
-import static org.zkovari.eclipse.gitlab.ui.views.CellImageDrawLabelProvider.PADDING_X;
-import static org.zkovari.eclipse.gitlab.ui.views.CellImageDrawLabelProvider.PADDING_Y;
+import static org.zkovari.eclipse.gitlab.ui.views.labels.CellImageDrawLabelProvider.PADDING_X;
+import static org.zkovari.eclipse.gitlab.ui.views.labels.CellImageDrawLabelProvider.PADDING_Y;
 
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
+import org.zkovari.eclipse.gitlab.ui.actions.CellAction;
 
 public class ColumnImageMouseListener implements MouseListener, MouseMoveListener, MouseTrackListener {
 
@@ -39,10 +40,10 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
             SWT.CURSOR_HAND);
     private final TableViewerColumn tableViewerColumn;
     private final int columnIndex;
-    private final CellMouseListenerAction action;
+    private final CellAction action;
 
     public ColumnImageMouseListener(TableViewerColumn tableViewerColumn, int columnIndex,
-            CellMouseListenerAction action) {
+            CellAction action) {
         this.tableViewerColumn = tableViewerColumn;
         this.columnIndex = columnIndex;
         this.action = action;

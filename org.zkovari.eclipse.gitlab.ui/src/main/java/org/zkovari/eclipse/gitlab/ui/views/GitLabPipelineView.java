@@ -58,6 +58,7 @@ import org.zkovari.eclipse.gitlab.core.Pipeline;
 import org.zkovari.eclipse.gitlab.core.ProjectMapping;
 import org.zkovari.eclipse.gitlab.core.TestReport;
 import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
+import org.zkovari.eclipse.gitlab.ui.actions.DisplayTestReportAction;
 import org.zkovari.eclipse.gitlab.ui.dialogs.SecureTokenInputDialog;
 import org.zkovari.eclipse.gitlab.ui.preferences.PreferenceConstants;
 
@@ -80,13 +81,13 @@ public class GitLabPipelineView extends ViewPart {
 
     private final ProjectMapping projectMapping;
     private final List<Pipeline> displayedPipelines;
-    private final TestReportDisplayer testReportDisplayer;
+    private final DisplayTestReportAction testReportDisplayer;
     private final GitLabClient gitLabClient;
 
     public GitLabPipelineView() {
         displayedPipelines = new ArrayList<>();
         projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getDefault().getProjectMapping();
-        testReportDisplayer = new TestReportDisplayer();
+        testReportDisplayer = new DisplayTestReportAction();
         gitLabClient = new GitLabClient();
     }
 

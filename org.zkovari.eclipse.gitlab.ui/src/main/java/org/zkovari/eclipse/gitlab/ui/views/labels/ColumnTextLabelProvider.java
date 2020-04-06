@@ -13,12 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.zkovari.eclipse.gitlab.ui.views;
+package org.zkovari.eclipse.gitlab.ui.views.labels;
 
-import org.eclipse.jface.viewers.ViewerCell;
+import java.util.function.Function;
 
-public interface CellMouseListenerAction {
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 
-    void run(ViewerCell cell);
+public class ColumnTextLabelProvider<T> extends ColumnLabelProvider {
+
+    private Function<T, String> function;
+
+    public ColumnTextLabelProvider(Function<T, String> function) {
+        this.function = function;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public String getText(Object element) {
+        return function.apply((T) element);
+    }
 
 }

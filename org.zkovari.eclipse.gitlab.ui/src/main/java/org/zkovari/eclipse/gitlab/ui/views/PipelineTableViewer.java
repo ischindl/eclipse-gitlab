@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.zkovari.eclipse.gitlab.ui.views;
 
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -26,6 +25,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.zkovari.eclipse.gitlab.core.Pipeline;
+import org.zkovari.eclipse.gitlab.ui.views.labels.CellImageDrawLabelProvider;
+import org.zkovari.eclipse.gitlab.ui.views.labels.ColumnTextLabelProvider;
+import org.zkovari.eclipse.gitlab.ui.views.labels.pipeline.PipelineStatusImageLabelProvider;
 
 public class PipelineTableViewer extends TableViewer {
 
@@ -78,15 +80,18 @@ public class PipelineTableViewer extends TableViewer {
     }
 
     private void createColumns() {
-        int minSize = 40;
         statusColumnViewer = createTableViewerColumn("Status", 60);
-        statusColumnViewer.setLabelProvider(new PipelineStatusImageLabelProvider());
+        webRefColumnViewer = createTableViewerColumn("URL", 40);
+        refColumnViewer = createTableViewerColumn("Commit", 100);
+        durationColumnViewer = createTableViewerColumn("Duration", 65);
+        createdAtColumnViewer = createTableViewerColumn("Last updated", 100);
+        coverageColumnViewer = createTableViewerColumn("Coverage", 80);
+        artifactsColumnViewer = createTableViewerColumn("", 40);
 
-        webRefColumnViewer = createTableViewerColumn("URL", minSize);
+        statusColumnViewer.setLabelProvider(new PipelineStatusImageLabelProvider());
         webRefColumnViewer.setLabelProvider(new CellImageDrawLabelProvider(
                 "platform:/plugin/org.eclipse.ui.browser/icons/obj16/external_browser.png"));
 
-        refColumnViewer = createTableViewerColumn("Commit", 100);
         refColumnViewer.setLabelProvider(new StyledCellLabelProvider() {
 
             @Override
@@ -105,40 +110,14 @@ public class PipelineTableViewer extends TableViewer {
 
         });
 
-        durationColumnViewer = createTableViewerColumn("Duration", 65);
-        durationColumnViewer.setLabelProvider(new ColumnLabelProvider() {
+        durationColumnViewer.setLabelProvider(
+                new ColumnTextLabelProvider<Pipeline>(pipeline -> Integer.toString(pipeline.getDuration())));
 
-            @Override
-            public String getText(Object element) {
-                Pipeline pipeline = (Pipeline) element;
-                return Integer.toString(pipeline.getDuration());
-            }
+        createdAtColumnViewer.setLabelProvider(new ColumnTextLabelProvider<Pipeline>(Pipeline::getUpdatedAt));
 
-        });
+        coverageColumnViewer.setLabelProvider(
+                new ColumnTextLabelProvider<Pipeline>(pipeline -> Double.toString(pipeline.getCoverage())));
 
-        createdAtColumnViewer = createTableViewerColumn("Last updated", 100);
-        createdAtColumnViewer.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-                Pipeline pipeline = (Pipeline) element;
-                return pipeline.getUpdatedAt();
-            }
-
-        });
-
-        coverageColumnViewer = createTableViewerColumn("Coverage", 80);
-        coverageColumnViewer.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-                Pipeline pipeline = (Pipeline) element;
-                return Double.toString(pipeline.getCoverage());
-            }
-
-        });
-
-        artifactsColumnViewer = createTableViewerColumn("", minSize);
         artifactsColumnViewer.setLabelProvider(
                 new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.jdt.junit/icons/full/eview16/junit.gif"));
     }

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.zkovari.eclipse.gitlab.ui.views;
+package org.zkovari.eclipse.gitlab.ui.actions;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,17 +32,18 @@ import org.eclipse.jdt.internal.junit.model.TestRunHandler;
 import org.eclipse.jdt.internal.junit.model.TestRunSession;
 import org.eclipse.jdt.internal.junit.ui.JUnitPlugin;
 import org.eclipse.jdt.internal.junit.ui.TestRunnerViewPart;
+import org.eclipse.jface.action.Action;
 import org.xml.sax.SAXException;
 import org.zkovari.eclipse.gitlab.core.TestReport;
 import org.zkovari.eclipse.gitlab.ui.GitLabUIPlugin;
 
 @SuppressWarnings("restriction")
-public class TestReportDisplayer {
+public class DisplayTestReportAction extends Action {
 
     private Marshaller marshaller;
     private SAXParser parser;
 
-    public TestReportDisplayer() {
+    public DisplayTestReportAction() {
         try {
             JAXBContext contextObj = JAXBContext.newInstance(TestReport.class);
             marshaller = contextObj.createMarshaller();
