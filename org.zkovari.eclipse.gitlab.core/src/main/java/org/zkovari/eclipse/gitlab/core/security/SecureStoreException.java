@@ -17,14 +17,14 @@ package org.zkovari.eclipse.gitlab.core.security;
 
 public class SecureStoreException extends Exception {
 
-	private static final long serialVersionUID = 3170924371952409571L;
+    private static final long serialVersionUID = 3170924371952409571L;
 
-	public SecureStoreException(String message, Throwable reason) {
-		super(message, reason);
-	}
+    public SecureStoreException(String message, Throwable reason) {
+        super(message, reason);
+    }
 
-	public SecureStoreException(String message) {
-		super(message);
-	}
+    public SecureStoreException(String message) {
+        super(message);
+    }
 
 }

@@ -34,8 +34,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -54,7 +52,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionService;
@@ -82,21 +79,23 @@ public class GitLabPipelineView extends ViewPart {
     private UISynchronize sync;
 
     private Composite composite;
-    private TableViewer viewer;
+    private TableViewer tableViewer;
     private Action refreshAction;
     private Link projectStatus;
 
-    private GitLabProject gitLabProject;
+    private GitLabProject displayedGitLabProject;
     private IPath repositoryPath;
 
     private final ProjectMapping projectMapping;
-    private final List<Pipeline> pipelines;
+    private final List<Pipeline> displayedPipelines;
     private final TestReportDisplayer testReportDisplayer;
+    private final GitLabClient gitLabClient;
 
     public GitLabPipelineView() {
-        pipelines = new ArrayList<>();
+        displayedPipelines = new ArrayList<>();
         projectMapping = org.zkovari.eclipse.gitlab.core.Activator.getDefault().getProjectMapping();
         testReportDisplayer = new TestReportDisplayer();
+        gitLabClient = new GitLabClient();
     }
 
     @Override
@@ -134,15 +133,15 @@ public class GitLabPipelineView extends ViewPart {
                             });
                             return;
                         }
-                        gitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get(),
+                        displayedGitLabProject = projectMapping.getOrCreateGitLabProject(repositoryPath, token.get(),
                                 getGitLabServer());
                         fetchPipelines();
                     } catch (IOException ex) {
-                        gitLabProject = null;
+                        displayedGitLabProject = null;
                         GitLabUIPlugin.showError(ex.getMessage());
                     }
                     sync.asyncExec(() -> {
-                        if (viewer == null || viewer.getTable().isDisposed()) {
+                        if (tableViewer == null || tableViewer.getTable().isDisposed()) {
                             createTableViewer();
                             projectStatus.dispose();
                             composite.layout(true);
@@ -157,31 +156,17 @@ public class GitLabPipelineView extends ViewPart {
 
     @SuppressWarnings("rawtypes")
     private void createTableViewer() {
-        viewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
+        tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
         createColumns();
 
-        viewer.getTable().setHeaderVisible(true);
-        viewer.getTable().setLinesVisible(true);
+        tableViewer.getTable().setHeaderVisible(true);
+        tableViewer.getTable().setLinesVisible(true);
 
         // removed generic because it wasn't supported in previous Eclipse versions
-        viewer.setContentProvider(new ObservableListContentProvider());
-        IObservableList input = Properties.<Pipeline>selfList(Pipeline.class).observe(pipelines);
-        viewer.setInput(input);
-        hookContextMenu();
+        tableViewer.setContentProvider(new ObservableListContentProvider());
+        IObservableList input = Properties.<Pipeline>selfList(Pipeline.class).observe(displayedPipelines);
+        tableViewer.setInput(input);
         contributeToActionBars();
-    }
-
-    private void hookContextMenu() {
-        MenuManager menuMgr = new MenuManager("#PopupMenu");
-        menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(GitLabPipelineView.this::fillContextMenu);
-        Menu menu = menuMgr.createContextMenu(viewer.getControl());
-        viewer.getControl().setMenu(menu);
-        getSite().registerContextMenu(menuMgr, viewer);
-    }
-
-    private void fillContextMenu(IMenuManager manager) {
-        manager.add(refreshAction);
     }
 
     private void addProjectSelectionListener() {
@@ -198,8 +183,8 @@ public class GitLabPipelineView extends ViewPart {
                 return;
             }
 
-            gitLabProject = projectMapping.findGitLabProject(repositoryPath);
-            if (gitLabProject == null) {
+            displayedGitLabProject = projectMapping.findGitLabProject(repositoryPath);
+            if (displayedGitLabProject == null) {
                 displayProjectStatusAndHideTable("<a>Bind project " + project.getName() + "</a>");
                 return;
             }
@@ -207,18 +192,18 @@ public class GitLabPipelineView extends ViewPart {
                 projectStatus.dispose();
                 composite.layout(true);
             }
-            if (gitLabProject.getPipelines().isEmpty()) {
+            if (displayedGitLabProject.getPipelines().isEmpty()) {
                 displayProjectStatusAndHideTable("Selected project does not have any pipelines: " + project.getName());
                 return;
             }
-            pipelines.clear();
-            pipelines.addAll(gitLabProject.getPipelines());
-            if (viewer == null || viewer.getTable().isDisposed()) {
+            displayedPipelines.clear();
+            displayedPipelines.addAll(displayedGitLabProject.getPipelines());
+            if (tableViewer == null || tableViewer.getTable().isDisposed()) {
                 createTableViewer();
                 composite.layout(true);
             }
-            if (viewer != null) {
-                viewer.refresh();
+            if (tableViewer != null) {
+                tableViewer.refresh();
             }
         });
     }
@@ -230,8 +215,8 @@ public class GitLabPipelineView extends ViewPart {
         }
         projectStatus.setText(text);
 
-        if (viewer != null && !viewer.getTable().isDisposed()) {
-            viewer.getTable().dispose();
+        if (tableViewer != null && !tableViewer.getTable().isDisposed()) {
+            tableViewer.getTable().dispose();
             composite.layout(true);
         }
     }
@@ -333,7 +318,6 @@ public class GitLabPipelineView extends ViewPart {
             Pipeline pipeline = (Pipeline) cell.getElement();
             Optional<String> token = GitLabUtils.getToken();
 
-            GitLabClient gitLabClient = new GitLabClient();
             TestReport testReport;
             try {
                 testReport = gitLabClient.getPipelineTestReports(getGitLabServer(), token.get(), pipeline);
@@ -362,7 +346,7 @@ public class GitLabPipelineView extends ViewPart {
     }
 
     private TableViewerColumn createTableViewerColumn(String title, int bound) {
-        final TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.NONE);
+        final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
         final TableColumn column = viewerColumn.getColumn();
         column.setText(title);
         column.setWidth(bound);
@@ -379,11 +363,11 @@ public class GitLabPipelineView extends ViewPart {
         refreshAction = new Action() {
             @Override
             public void run() {
-                if (viewer == null) {
+                if (tableViewer == null) {
                     return;
                 }
                 fetchPipelines();
-                viewer.refresh();
+                tableViewer.refresh();
             }
         };
         refreshAction.setText("Update");
@@ -394,7 +378,7 @@ public class GitLabPipelineView extends ViewPart {
     }
 
     private void fetchPipelines() {
-        if (gitLabProject == null) {
+        if (displayedGitLabProject == null) {
             return;
         }
 
@@ -409,13 +393,13 @@ public class GitLabPipelineView extends ViewPart {
         }
 
         try {
-            GitLabClient gitLabClient = new GitLabClient();
-            List<Pipeline> newPipelines = gitLabClient.getPipelines(getGitLabServer(), token.get(), gitLabProject);
-            gitLabProject.getPipelines().clear();
-            gitLabProject.getPipelines().addAll(newPipelines);
+            List<Pipeline> newPipelines = gitLabClient.getPipelines(getGitLabServer(), token.get(),
+                    displayedGitLabProject);
+            displayedGitLabProject.getPipelines().clear();
+            displayedGitLabProject.getPipelines().addAll(newPipelines);
 
-            pipelines.clear();
-            pipelines.addAll(newPipelines);
+            displayedPipelines.clear();
+            displayedPipelines.addAll(newPipelines);
         } catch (IOException ex) {
             GitLabUIPlugin.showError(ex.getMessage());
         }
