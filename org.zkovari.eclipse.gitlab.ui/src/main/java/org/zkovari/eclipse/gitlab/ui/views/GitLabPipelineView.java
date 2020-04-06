@@ -37,22 +37,15 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StyledCellLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.PartInitException;
@@ -79,8 +72,7 @@ public class GitLabPipelineView extends ViewPart {
     private UISynchronize sync;
 
     private Composite composite;
-    private TableViewer tableViewer;
-    private Action refreshAction;
+    private PipelineTableViewer tableViewer;
     private Link projectStatus;
 
     private GitLabProject displayedGitLabProject;
@@ -108,8 +100,28 @@ public class GitLabPipelineView extends ViewPart {
         projectStatus.setText("Select project...");
         addRepositoryBindingSelectionListener();
         addProjectSelectionListener();
-        makeActions();
         contributeToActionBars();
+    }
+
+    private void contributeToActionBars() {
+        Action refreshAction = new Action() {
+            @Override
+            public void run() {
+                if (tableViewer == null) {
+                    return;
+                }
+                fetchPipelines();
+                tableViewer.refresh();
+            }
+        };
+        refreshAction.setText("Update");
+        refreshAction.setToolTipText("Update pipelines");
+        ImageDescriptor image = GitLabUIPlugin
+                .getImageDescriptor("platform:/plugin/org.eclipse.ui.views.log/icons/elcl16/refresh.png");
+        refreshAction.setImageDescriptor(image);
+
+        IActionBars bars = getViewSite().getActionBars();
+        bars.getToolBarManager().add(refreshAction);
     }
 
     @Override
@@ -156,17 +168,42 @@ public class GitLabPipelineView extends ViewPart {
 
     @SuppressWarnings("rawtypes")
     private void createTableViewer() {
-        tableViewer = new TableViewer(composite, SWT.H_SCROLL | SWT.V_SCROLL);
-        createColumns();
-
-        tableViewer.getTable().setHeaderVisible(true);
-        tableViewer.getTable().setLinesVisible(true);
+        tableViewer = new PipelineTableViewer(composite);
+        addColumnListeners();
 
         // removed generic because it wasn't supported in previous Eclipse versions
         tableViewer.setContentProvider(new ObservableListContentProvider());
         IObservableList input = Properties.<Pipeline>selfList(Pipeline.class).observe(displayedPipelines);
         tableViewer.setInput(input);
-        contributeToActionBars();
+    }
+
+    private void addColumnListeners() {
+        TableViewerColumn webRefColumnViewer = tableViewer.getWebRefColumnViewer();
+        new ColumnImageMouseListener(webRefColumnViewer, tableViewer.indexOf(webRefColumnViewer), cell -> {
+            try {
+                Pipeline pipeline = (Pipeline) cell.getElement();
+                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser()
+                        .openURL(new URL(getGitLabServer() + pipeline.getDetailedStatus().getDetailsPath()));
+            } catch (PartInitException | MalformedURLException ex) {
+                GitLabUIPlugin.logError(ex.getMessage());
+            }
+        });
+
+        TableViewerColumn artifactsColumnViewer = tableViewer.getArtifactsColumnViewer();
+        new ColumnImageMouseListener(artifactsColumnViewer, tableViewer.indexOf(artifactsColumnViewer), cell -> {
+            Pipeline pipeline = (Pipeline) cell.getElement();
+            Optional<String> token = GitLabUtils.getToken();
+
+            TestReport testReport;
+            try {
+                testReport = gitLabClient.getPipelineTestReports(getGitLabServer(), token.get(), pipeline);
+                pipeline.setTestReport(testReport);
+            } catch (IOException ex) {
+                GitLabUIPlugin.logError(ex.getMessage());
+            }
+
+            testReportDisplayer.display(pipeline.getTestReport());
+        });
     }
 
     private void addProjectSelectionListener() {
@@ -241,140 +278,9 @@ public class GitLabPipelineView extends ViewPart {
         return resource.getProject();
     }
 
-    private void createColumns() {
-        int minSize = 40;
-
-        TableViewerColumn statusColumnViewer = createTableViewerColumn("Status", 60);
-        statusColumnViewer.setLabelProvider(new PipelineStatusImageLabelProvider());
-
-        TableViewerColumn webRefColumnViewer = createTableViewerColumn("URL", minSize);
-        ColumnImageMouseListener columnMouseListener = new ColumnImageMouseListener(webRefColumnViewer, 1, cell -> {
-            try {
-                Pipeline pipeline = (Pipeline) cell.getElement();
-                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser()
-                        .openURL(new URL(getGitLabServer() + pipeline.getDetailedStatus().getDetailsPath()));
-            } catch (PartInitException | MalformedURLException ex) {
-                GitLabUIPlugin.logError(ex.getMessage());
-            }
-        });
-        addMouseListener(webRefColumnViewer, columnMouseListener);
-        webRefColumnViewer.setLabelProvider(new CellImageDrawLabelProvider(
-                "platform:/plugin/org.eclipse.ui.browser/icons/obj16/external_browser.png"));
-
-        TableViewerColumn refColumnViewer = createTableViewerColumn("Commit", 100);
-        refColumnViewer.setLabelProvider(new StyledCellLabelProvider() {
-
-            @Override
-            public void update(ViewerCell cell) {
-                Pipeline pipeline = (Pipeline) cell.getElement();
-                cell.setText(pipeline.getSha());
-
-                StyleRange refStyledRange = new StyleRange(0, pipeline.getSha().length(),
-                        Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE), null);
-                refStyledRange.underline = true;
-                StyleRange[] range = { refStyledRange };
-                cell.setStyleRanges(range);
-
-                super.update(cell);
-            }
-
-        });
-
-        TableViewerColumn durationColumnViewer = createTableViewerColumn("Duration", 65);
-        durationColumnViewer.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-                Pipeline pipeline = (Pipeline) element;
-                return Integer.toString(pipeline.getDuration());
-            }
-
-        });
-
-        TableViewerColumn createdAtColumnViewer = createTableViewerColumn("Last updated", 100);
-        createdAtColumnViewer.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-                Pipeline pipeline = (Pipeline) element;
-                return pipeline.getUpdatedAt();
-            }
-
-        });
-
-        TableViewerColumn coverageColumnViewer = createTableViewerColumn("Coverage", 80);
-        coverageColumnViewer.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-                Pipeline pipeline = (Pipeline) element;
-                return Double.toString(pipeline.getCoverage());
-            }
-
-        });
-
-        TableViewerColumn artifactsColumnViewer = createTableViewerColumn("", minSize);
-        columnMouseListener = new ColumnImageMouseListener(artifactsColumnViewer, 6, cell -> {
-            Pipeline pipeline = (Pipeline) cell.getElement();
-            Optional<String> token = GitLabUtils.getToken();
-
-            TestReport testReport;
-            try {
-                testReport = gitLabClient.getPipelineTestReports(getGitLabServer(), token.get(), pipeline);
-                pipeline.setTestReport(testReport);
-            } catch (IOException ex) {
-                GitLabUIPlugin.logError(ex.getMessage());
-            }
-
-            testReportDisplayer.display(pipeline.getTestReport());
-
-        });
-        addMouseListener(artifactsColumnViewer, columnMouseListener);
-        artifactsColumnViewer.setLabelProvider(
-                new CellImageDrawLabelProvider("platform:/plugin/org.eclipse.jdt.junit/icons/full/eview16/junit.gif"));
-    }
-
     private String getGitLabServer() {
         IPreferenceStore store = GitLabUIPlugin.getDefault().getPreferenceStore();
         return store.getString(PreferenceConstants.P_GITLAB_SERVER);
-    }
-
-    private void addMouseListener(TableViewerColumn columnViewer, ColumnImageMouseListener mouseListener) {
-        columnViewer.getViewer().getControl().addMouseListener(mouseListener);
-        columnViewer.getViewer().getControl().addMouseMoveListener(mouseListener);
-        columnViewer.getViewer().getControl().addMouseTrackListener(mouseListener);
-    }
-
-    private TableViewerColumn createTableViewerColumn(String title, int bound) {
-        final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-        final TableColumn column = viewerColumn.getColumn();
-        column.setText(title);
-        column.setWidth(bound);
-        column.setResizable(true);
-        return viewerColumn;
-    }
-
-    private void contributeToActionBars() {
-        IActionBars bars = getViewSite().getActionBars();
-        bars.getToolBarManager().add(refreshAction);
-    }
-
-    private void makeActions() {
-        refreshAction = new Action() {
-            @Override
-            public void run() {
-                if (tableViewer == null) {
-                    return;
-                }
-                fetchPipelines();
-                tableViewer.refresh();
-            }
-        };
-        refreshAction.setText("Update");
-        refreshAction.setToolTipText("Update pipelines");
-        ImageDescriptor image = GitLabUIPlugin
-                .getImageDescriptor("platform:/plugin/org.eclipse.ui.views.log/icons/elcl16/refresh.png");
-        refreshAction.setImageDescriptor(image);
     }
 
     private void fetchPipelines() {

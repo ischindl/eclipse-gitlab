@@ -46,6 +46,10 @@ public class ColumnImageMouseListener implements MouseListener, MouseMoveListene
         this.tableViewerColumn = tableViewerColumn;
         this.columnIndex = columnIndex;
         this.action = action;
+
+        tableViewerColumn.getViewer().getControl().addMouseListener(this);
+        tableViewerColumn.getViewer().getControl().addMouseMoveListener(this);
+        tableViewerColumn.getViewer().getControl().addMouseTrackListener(this);
     }
 
     @Override
