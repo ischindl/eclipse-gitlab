@@ -15,18 +15,15 @@
  ******************************************************************************/
 package org.zkovari.eclipse.gitlab.ui.views;
 
-import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.zkovari.eclipse.gitlab.core.Pipeline;
 import org.zkovari.eclipse.gitlab.ui.views.labels.CellImageDrawLabelProvider;
 import org.zkovari.eclipse.gitlab.ui.views.labels.ColumnTextLabelProvider;
+import org.zkovari.eclipse.gitlab.ui.views.labels.StyledCellLinkLabelProvider;
 import org.zkovari.eclipse.gitlab.ui.views.labels.pipeline.PipelineStatusImageLabelProvider;
 
 public class PipelineTableViewer extends TableViewer {
@@ -89,26 +86,11 @@ public class PipelineTableViewer extends TableViewer {
         artifactsColumnViewer = createTableViewerColumn("", 40);
 
         statusColumnViewer.setLabelProvider(new PipelineStatusImageLabelProvider());
+
         webRefColumnViewer.setLabelProvider(new CellImageDrawLabelProvider(
                 "platform:/plugin/org.eclipse.ui.browser/icons/obj16/external_browser.png"));
 
-        refColumnViewer.setLabelProvider(new StyledCellLabelProvider() {
-
-            @Override
-            public void update(ViewerCell cell) {
-                Pipeline pipeline = (Pipeline) cell.getElement();
-                cell.setText(pipeline.getSha());
-
-                StyleRange refStyledRange = new StyleRange(0, pipeline.getSha().length(),
-                        Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE), null);
-                refStyledRange.underline = true;
-                StyleRange[] range = { refStyledRange };
-                cell.setStyleRanges(range);
-
-                super.update(cell);
-            }
-
-        });
+        refColumnViewer.setLabelProvider(new StyledCellLinkLabelProvider<Pipeline>(Pipeline::getSha));
 
         durationColumnViewer.setLabelProvider(
                 new ColumnTextLabelProvider<Pipeline>(pipeline -> Integer.toString(pipeline.getDuration())));
