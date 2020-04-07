@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.equinox.security,
  org.eclipse.core.resources,
  org.eclipse.egit.core,
  org.eclipse.jgit,
- javax.xml
+ javax.xml.bind
 Export-Package: org.zkovari.eclipse.gitlab.core,
  org.zkovari.eclipse.gitlab.core.internal;x-friends:="org.zkovari.eclipse.gitlab.core.test",
  org.zkovari.eclipse.gitlab.core.security
