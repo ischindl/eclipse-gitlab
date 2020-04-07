@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.resources.IProject;
@@ -32,7 +30,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -45,6 +42,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionService;
@@ -68,9 +66,6 @@ public class GitLabPipelineView extends ViewPart {
      * The ID of the view as specified by the extension.
      */
     public static final String ID = "org.zkovari.eclipse.gitlab.ui.views.GitLabPipelineView";
-
-    @Inject
-    private UISynchronize sync;
 
     private Composite composite;
     private PipelineTableViewer tableViewer;
@@ -139,7 +134,7 @@ public class GitLabPipelineView extends ViewPart {
                     try {
                         Optional<String> token = GitLabUtils.getToken();
                         if (!token.isPresent()) {
-                            sync.asyncExec(() -> {
+                            Display.getDefault().asyncExec(() -> {
                                 SecureTokenInputDialog dialog = new SecureTokenInputDialog(composite.getShell());
                                 dialog.create();
                                 dialog.open();
@@ -153,7 +148,7 @@ public class GitLabPipelineView extends ViewPart {
                         displayedGitLabProject = null;
                         GitLabUIPlugin.showError(ex.getMessage());
                     }
-                    sync.asyncExec(() -> {
+                    Display.getDefault().asyncExec(() -> {
                         if (tableViewer == null || tableViewer.getTable().isDisposed()) {
                             createTableViewer();
                             projectStatus.dispose();
@@ -291,7 +286,7 @@ public class GitLabPipelineView extends ViewPart {
 
         Optional<String> token = GitLabUtils.getToken();
         if (!token.isPresent()) {
-            sync.asyncExec(() -> {
+            Display.getDefault().asyncExec(() -> {
                 SecureTokenInputDialog dialog = new SecureTokenInputDialog(composite.getShell());
                 dialog.create();
                 dialog.open();
@@ -310,7 +305,6 @@ public class GitLabPipelineView extends ViewPart {
         } catch (IOException ex) {
             GitLabUIPlugin.showError(ex.getMessage());
         }
-
     }
 
 }
