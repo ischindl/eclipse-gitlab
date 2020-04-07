@@ -25,5 +25,4 @@ Export-Package: org.zkovari.eclipse.gitlab.ui,
  org.zkovari.eclipse.gitlab.ui.views,
  org.zkovari.eclipse.gitlab.ui.views.labels,
  org.zkovari.eclipse.gitlab.ui.views.labels.pipeline
-Import-Package: javax.xml.bind,
- javax.xml.parsers
+Import-Package: javax.xml.bind
